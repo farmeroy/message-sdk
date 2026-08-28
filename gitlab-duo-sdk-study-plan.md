@@ -1,4 +1,4 @@
-# GitLab Duo Client SDK — Focused Study Plan
+ GitLab Duo Client SDK — Focused Study Plan
 
 The goal: be able to speak intelligently about SDK design, packaging, and
 isomorphic TypeScript in technical discussions. The fastest path is to build a
@@ -6,7 +6,7 @@ small SDK that exercises every concept the role cares about.
 
 ---
 
-## The Project: Build an Anthropic Client SDK
+## The Project: Build an Agent Message SDK
 
 Build an isomorphic TypeScript SDK that wraps the Anthropic Messages API. This
 is the right level of complexity: it needs to work in Node (CLI tools, server
@@ -18,7 +18,7 @@ package it* rather than learning what the API does.
 Structure:
 
 ```
-anthropic-sdk/
+agent-message-sdk/
 ├── packages/
 │   ├── core/           # types, message builder, response parsing, streaming
 │   │                   #   protocol — no platform-specific imports
@@ -29,9 +29,12 @@ anthropic-sdk/
 │   ├── cli/            # Node consumer — simple prompt→response script
 │   └── web/            # Vite app consumer — streaming chat UI
 ├── package.json        # workspace root
-├── tsconfig.base.json
+├── tsconfig.shared.json
+├── tsconfig.json       # root — references only, not a compilation target
 └── pnpm-workspace.yaml
 ```
+
+Scope: `@agent-message-sdk/*` across all packages.
 
 Why this project specifically:
 - **Isomorphic**: fetch, streams, and auth all differ between Node and browser
@@ -49,35 +52,62 @@ This one project covers points 1–5 below. Spend ~1 week on it.
 
 ---
 
-## Phase 1: Monorepo + Package Fundamentals (Days 1–2)
+## Phase 1: Monorepo + Package Fundamentals (Days 1–2) ✅
 
 ### Learn
 
-- **pnpm workspaces**: read the pnpm docs on workspaces. Understand
-  `pnpm-workspace.yaml`, how `workspace:*` protocol works for local deps.
-- **package.json anatomy for a published package**: `name`, `version`, `main`,
-  `module`, `types`, `exports`, `files`, `sideEffects`. The `exports` field is
-  the modern way — understand conditional exports (`import` vs `require` vs
-  `types`).
-- **tsconfig project references**: `composite: true`, `references`, and how
-  `tsBuildInfoFile` enables incremental builds across packages.
+- **pnpm workspaces**: `pnpm-workspace.yaml` defines which directories are
+  workspace packages (not `package.json` — that's npm/yarn). `workspace:*`
+  protocol links local packages; at publish time it's replaced with the actual
+  version.
+- **package.json anatomy for a published package**: `name` (scoped, e.g.
+  `@agent-message-sdk/core`), `version`, `main` (entry point for consumers),
+  `types` (TypeScript declaration entry), `exports` (modern replacement — Phase
+  2). Without `main`, Node falls back to `index.js` in the package root.
+- **tsconfig project references**: `composite: true` marks a package as a
+  buildable project. `references` in each package's tsconfig declares its
+  dependencies. The root `tsconfig.json` in `--build` mode should be a
+  coordinator only — just `references`, no `extends`, no `outDir`, no
+  compilation of its own.
+- **`index.ts` as barrel file**: re-export everything consumers should be able
+  to import. Anything not re-exported stays internal to the package. Types are
+  erased at compile time, but consumers still need them re-exported to use them
+  by name.
 
-### Do
+### Lessons learned
 
-1. `mkdir anthropic-sdk && cd anthropic-sdk && pnpm init`
-2. Create `pnpm-workspace.yaml` pointing at `packages/*`
-3. Create `packages/core` with its own `package.json` and `tsconfig.json`
-4. Define the core types in `core` — `Message`, `MessageCreateParams`,
-   `MessageResponse`, `ContentBlock`, `Role`. Export them.
-5. Create `packages/node` with its own `package.json`. Import the types from
-   `@anthropic-sdk/core` using `workspace:*`.
-6. Make sure `pnpm install` links them, `tsc --build` compiles across packages.
+- **`lib` in tsconfig** restricts which built-in type definitions TypeScript
+  includes. Setting `"lib": ["ES2022"]` explicitly excludes Node globals like
+  `console` — they come from `@types/node`, which TypeScript only picks up
+  automatically when `lib` isn't set (or when you add `"types": ["node"]` to
+  `compilerOptions`).
+- **`lib` vs `types` vs `@types/*`**: `lib` = built-in type defs shipped with
+  TypeScript (ES features, DOM APIs). `types` = which `@types/*` packages to
+  include from `node_modules`. `@types/node` = third-party type declarations
+  for Node globals.
+- **`target` vs `lib`**: `target` controls what JS syntax tsc emits. `lib`
+  controls what APIs TypeScript assumes exist at runtime. They're independent.
+- **`outDir` must be inside `compilerOptions`**, not a top-level tsconfig key.
+- **Root tsconfig in `--build` mode**: if the root tsconfig extends the shared
+  config and has its own `outDir`, it acts as a compilation target — grabbing
+  all `.ts` files and compiling them into a single output folder. Fix: make it
+  references-only.
+- **`tsc` doesn't clean up** previous output. When changing `outDir`, manually
+  delete stale `.js`/`.d.ts`/`.js.map` files.
+- **pnpm strictness**: `pnpm install` must run from the repo root to resolve
+  workspace links. Use `pnpm exec` instead of `npx` (which uses npm). Root dev
+  dependencies need the `-w` flag.
+- **`--filter`**: `pnpm --filter @agent-message-sdk/node run build` targets a
+  single package. `--filter ...@agent-message-sdk/node` means "this package and
+  all its dependencies" — builds core first, then node.
 
 ### Checkpoint
 
-You should be able to explain: what a workspace is, how packages reference each
-other locally, and what happens at publish time (the `workspace:*` protocol gets
-replaced with the actual version).
+A workspace is a way to manage a group of JS/TS projects in a single repo.
+Each project has its own dependencies but can share dependencies and reference
+each other via `workspace:*`. `tsc --build` with `references` models the
+dependency graph so packages compile in the right order. At publish time,
+`workspace:*` is replaced with real version numbers.
 
 ---
 
@@ -96,27 +126,27 @@ replaced with the actual version).
 
 ### Do
 
-1. Set up `tsup` in `packages/core` to output both ESM and CJS from the same
-   source. (tsup is what many real SDKs use — worth knowing even if you could
-   do it with raw tsc.)
-2. Set up the `exports` field in `packages/core/package.json`:
-   ```json
-   "exports": {
-     ".": {
-       "import": "./dist/index.mjs",
-       "require": "./dist/index.cjs",
-       "types": "./dist/index.d.ts"
-     }
-   }
-   ```
-3. In `examples/cli`, write a CJS script that `require()`s `@anthropic-sdk/core`.
-   Write an ESM script that `import`s it. Verify both resolve correctly.
+1. Understand the problem first: use `tsc` with two different `module` settings
+   to produce ESM and CJS output. Look at the emitted JavaScript — what
+   actually differs? `import/export` vs `require/module.exports`.
+2. Create `examples/cli` — a small script that imports from
+   `@agent-message-sdk/core` and does something simple (create a message, print
+   it). This simulates an external consumer of your SDK. Write both a CJS
+   version (`require()`) and an ESM version (`import`). See what breaks when
+   the format doesn't match.
+3. Set up the `exports` field in `packages/core/package.json` to map `"import"`
+   and `"require"` conditions to the correct output files. `"types"` should
+   come first in each condition block (TypeScript resolves top-down).
+4. Once you understand the mechanics, decide whether a tool like `tsup` is
+   worth adding. tsup wraps esbuild and produces both formats from one config —
+   convenient, but you should understand what it's abstracting before reaching
+   for it.
 
 ### Checkpoint
 
 You should be able to explain: why a published SDK might need to support both
-module systems, what breaks when you get it wrong, and what the `exports` map
-does.
+module systems, what breaks when you get it wrong, what the `exports` map does,
+and what the actual differences in emitted JS look like between ESM and CJS.
 
 ---
 
@@ -181,21 +211,18 @@ JD's "isolate platform-specific behavior in adapters at the edges."
 - **Deprecation paths**: how to deprecate without breaking — mark old API with
   `@deprecated` JSDoc, keep it working for at least one minor release, document
   the migration in the changelog, remove in the next major.
-- **Changesets** (the tool): a popular way to manage versioning and changelogs
-  in monorepos. `@changesets/cli` — each PR adds a changeset file describing
-  the change and its semver bump, then `changeset version` applies them all.
+- **Changesets** (optional tool): `@changesets/cli` manages versioning and
+  changelogs in monorepos. Worth understanding the workflow (each PR adds a
+  changeset describing the change and its semver bump), but understand the
+  semver concepts before reaching for the tool.
 
 ### Do
 
-1. Install `@changesets/cli` in your monorepo root.
-2. `pnpm changeset init`
-3. Add a `countTokens()` method to the core client. Run `pnpm changeset` to
-   create a changeset (minor bump). Run `pnpm changeset version` to see it
-   update `package.json` and `CHANGELOG.md`.
-4. Now simulate a breaking change: rename `createClient()` to `createAnthropic()`.
-   Deprecate the old name first (keep `createClient` as a wrapper with
-   `@deprecated` JSDoc), publish a minor. Then remove the wrapper and publish
-   a major.
+1. Simulate a deprecation cycle: add a new method, deprecate an existing one
+   with `@deprecated` JSDoc, then remove the old one. Think about what version
+   bumps each step requires.
+2. Optionally install `@changesets/cli` and run through its workflow to see how
+   automated changelog generation works.
 
 ### Checkpoint
 
@@ -218,16 +245,16 @@ alongside it, document the migration, remove the old one in the next major.
     fine-grained elimination
   - Side effects in module scope (code that runs on import)
   - `"sideEffects": false` in package.json tells bundlers it's safe to prune
-- **Measuring bundle impact**: `bundlephobia.com` for published packages,
-  `source-map-explorer` or `vite-bundle-visualizer` locally.
+- **Measuring bundle impact**: `source-map-explorer` or
+  `vite-bundle-visualizer` locally.
 
 ### Do
 
-1. Add `"sideEffects": false` to `@anthropic-sdk/core`'s package.json.
+1. Add `"sideEffects": false` to `@agent-message-sdk/core`'s package.json.
 2. In `examples/web`, import only `createClient` from `core` (not the full
-   barrel export). Build with Vite. Check the output — unused type-related
-   runtime code and helper functions should be eliminated.
-3. Now change the import to `import * from '@anthropic-sdk/core'`. Rebuild.
+   barrel export). Build with Vite. Check the output — unused runtime code
+   and helper functions should be eliminated.
+3. Now change the import to `import * from '@agent-message-sdk/core'`. Rebuild.
    Compare sizes.
 4. Run `vite-bundle-visualizer` to see what's in the bundle — note how the
    Node adapter should NOT appear in the browser bundle.
@@ -249,8 +276,8 @@ the patterns differ, and connect it to how the Duo SDK would handle the same
 problem.
 
 - **Bearer tokens**: stateless, sent in `Authorization` header, common in API
-  calls from Node/CLI. Your Anthropic SDK uses this: `x-api-key` header. In
-  the Duo SDK, VS Code extensions would use a PAT or OAuth token the same way.
+  calls from Node/CLI. Your SDK uses this: `x-api-key` header. In the Duo SDK,
+  VS Code extensions would use a PAT or OAuth token the same way.
 - **Session cookies**: browser-managed, sent automatically with same-origin
   requests. Duo Chat on GitLab.com uses this — the user is already logged into
   GitLab, so cookies ride along.
@@ -302,9 +329,9 @@ understand the correspondence so you can discuss it.
 2. Build a `<ChatBox>` component that uses `ref` (message input, response text),
    `computed` (character count, loading state), `watch` (auto-scroll on new
    tokens), and `onMounted` (initialize the SDK client).
-3. Wire it to your Anthropic SDK's browser adapter — type a message, stream the
-   response into the component. This is the same integration path a Duo Chat
-   Vue component would use with the Duo SDK.
+3. Wire it to your SDK's browser adapter — type a message, stream the response
+   into the component. This is the same integration path a Duo Chat Vue
+   component would use with the Duo SDK.
 
 ### Checkpoint
 
@@ -325,8 +352,8 @@ interfaces, never imports platform-specific modules. Consumers pick their
 adapter.
 
 **"Walk us through publishing a breaking change."**
-→ Deprecate in minor, document migration, remove in next major. Changesets for
-versioning. Semver is a contract with consumers.
+→ Deprecate in minor, document migration, remove in next major. Semver is a
+contract with consumers.
 
 **"How do you keep bundle size small for browser consumers?"**
 → ESM for tree-shaking, `sideEffects: false`, avoid barrel re-exports,
@@ -350,7 +377,9 @@ design decisions. Reusable Web Components with stable public interfaces.
 ## Resources
 
 - pnpm workspaces: https://pnpm.io/workspaces
+- pnpm filtering: https://pnpm.io/filtering
 - Node.js packages docs (exports, imports): https://nodejs.org/api/packages.html
+- npm workspaces docs (concepts transfer): https://docs.npmjs.com/cli/using-npm/workspaces
 - tsup (simple TS library bundler): https://tsup.egoist.dev/
 - Changesets: https://github.com/changesets/changesets
 - Vue 3 Composition API: https://vuejs.org/guide/extras/composition-api-faq.html
