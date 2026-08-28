@@ -1,4 +1,6 @@
 {
-  "extends": "./tsconfig.shared.json",
-  "outDir": "./dist"
+  "references": [
+    {"path": "./packages/core"},
+    {"path": "./packages/node"}
+  ]
 }
