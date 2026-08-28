@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "preserve",
+    "module": "esnext",
     "target": "es2022",
     "esModuleInterop": true,
     "resolveJsonModule": true,

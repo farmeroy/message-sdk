@@ -1,6 +1,7 @@
 {
   "name": "@agent-message-sdk/node",
   "version": "1.0.0",
+  "type": "module",
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
