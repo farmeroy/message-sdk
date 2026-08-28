@@ -1,0 +1,1 @@
+{"version":"7.0.2","root":["./packages/core/index.ts","./packages/core/types.ts","./packages/node/index.ts"],"packageJsons":["./packages/core/package.json","./packages/node/package.json"]}

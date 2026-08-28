@@ -1,0 +1,11 @@
+{
+  "name": "@agent-message-sdk/node",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "private": true,
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@agent-message-sdk/core": "workspace:*",
+    "@types/node": "^26.4.0"
+  }
+}

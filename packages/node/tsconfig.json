@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.shared.json",
+  "outDir": "./dist",
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}
