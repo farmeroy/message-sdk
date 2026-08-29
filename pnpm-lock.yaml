@@ -215,6 +215,12 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  examples/cli:
+    dependencies:
+      '@agent-message-sdk/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+
   packages/core: {}
 
   packages/node:
