@@ -111,7 +111,7 @@ dependency graph so packages compile in the right order. At publish time,
 
 ---
 
-## Phase 2: ESM vs CommonJS (Days 2–3)
+## Phase 2: ESM vs CommonJS (Days 2–3) ✅
 
 ### Learn
 
@@ -137,16 +137,55 @@ dependency graph so packages compile in the right order. At publish time,
 3. Set up the `exports` field in `packages/core/package.json` to map `"import"`
    and `"require"` conditions to the correct output files. `"types"` should
    come first in each condition block (TypeScript resolves top-down).
-4. Once you understand the mechanics, decide whether a tool like `tsup` is
-   worth adding. tsup wraps esbuild and produces both formats from one config —
-   convenient, but you should understand what it's abstracting before reaching
-   for it.
+4. Once you understand the mechanics, decide whether a tool like tsdown is
+   worth adding. tsdown (successor to tsup, from the rolldown project) produces
+   both formats from one config with correct file extensions — convenient, but
+   you should understand what it's abstracting before reaching for it.
+
+### Lessons learned
+
+- **tsconfig `module` and `package.json` `type` must agree.** These are two
+  independent systems with no shared config. `tsc` uses `module` to decide what
+  syntax to emit. Node uses `type` to decide how to interpret `.js` files. When
+  they disagree, you get cryptic runtime errors (e.g., CJS syntax in a file
+  Node treats as ESM because of `"type": "module"`).
+- **`tsc` cannot control output file extensions.** It always outputs `.js`. You
+  can't get `.mjs`/`.cjs` from `tsc` alone — this matters because file
+  extensions override `"type"` in `package.json` and are the cleanest way to
+  disambiguate formats. To get `.mjs`/`.cjs` you need either a build tool
+  (tsdown) or post-build scripts.
+- **Dual output with raw `tsc` means two tsconfigs, two build passes, two
+  output directories.** Each tsconfig overrides `module` and `outDir` from the
+  shared config. The root `tsconfig.json` needs explicit references to both
+  (no wildcard support). This gets tedious fast with multiple packages.
+- **The `exports` map routes consumers to the right format**, but the files it
+  points to must actually be interpretable as that format. A `.js` file with CJS
+  content inside a `"type": "module"` package will fail — Node looks at the
+  nearest `package.json` `type`, not the file content. Workarounds: `.cjs`
+  extensions (needs a build tool), or a nested `package.json` with
+  `"type": "commonjs"` inside the CJS output directory (a hack, but used by
+  real SDKs).
+- **`exports` must nest under `"."`** (the package root entry point). `"types"`
+  should come first in each condition block — TypeScript resolves top-down.
+- **`tsconfig.shared.json` `"module": "preserve"`** passes import/export syntax
+  through unchanged — useful when a downstream bundler handles module
+  transformation, but useless for seeing the ESM vs CJS difference.
+- **Breakage scenarios observed:**
+  - CJS output + ESM consumer → named imports fail
+  - ESM output + CJS consumer → `require()` can't parse `export` syntax
+  - tsconfig/package.json disagreement → Node interprets the file wrong
+- **Bottom line:** managing build targets via `tsc` and `package.json` gets
+  complex fast. You either end up building custom scripts or using a
+  comprehensive tool like tsdown. The value of the tool is clear once you've
+  hit the friction firsthand.
 
 ### Checkpoint
 
 You should be able to explain: why a published SDK might need to support both
 module systems, what breaks when you get it wrong, what the `exports` map does,
 and what the actual differences in emitted JS look like between ESM and CJS.
+The sane default for a modern SDK is ESM-first with an `exports` map that
+optionally adds a CJS fallback.
 
 ---
 
