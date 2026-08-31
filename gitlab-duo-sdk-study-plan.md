@@ -119,8 +119,18 @@ dependency graph so packages compile in the right order. At publish time,
   interpretation, why you need `.cjs` extension for CommonJS in an ESM package.
 - **Module resolution**: Node's algorithm for ESM (`import`) vs CJS (`require`).
   Why `exports` map in package.json is the modern solution.
+  - ```json
+     "exports": {
+        ".": {
+          "import": "./dist/mjs/index.js",
+          "require": "./dist/cjs/index.js",
+          "types": "./dist/index.d.ts"
+    ```
+    We need to define were our exports will end up
+
 - **Dual publishing**: shipping both ESM and CJS from a single source. The
   `exports` field with `"import"` and `"require"` conditions.
+   - this involves creating a second tsconfig with its own declaration to cjs. The problem is that typescript cannot modify the file extension. the common js modules therefor need their own `package.json` to understand how ro resolve modules. either the file extension or the package json needs to be added _post build_ via some kind of script. This is where larger projects reach for some kind of bundler, like `tsdown`, to simplify their workflows.
 - **`moduleResolution: "bundler"` vs `"node16"`** in tsconfig — what each
   expects and why it matters for a library.
 
