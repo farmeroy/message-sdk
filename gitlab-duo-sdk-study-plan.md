@@ -188,6 +188,33 @@ dependency graph so packages compile in the right order. At publish time,
   complex fast. You either end up building custom scripts or using a
   comprehensive tool like tsdown. The value of the tool is clear once you've
   hit the friction firsthand.
+- **Build vs Bundle separation.** With a bundler in the picture, `tsc` becomes
+  a type checker and editor tooling — not a compiler. `tsc --noEmit` validates
+  types; tsdown (or any bundler) produces the actual `.js` output. Your
+  `tsconfig.json` is effectively a config for your LSP and a CI lint step.
+- **`tsc --build` and `--noEmit` are incompatible.** Build mode requires emit
+  because downstream projects consume the `.d.ts` output of upstream ones. If
+  you want type-check-only, drop `composite`/`references` and just run
+  `tsc --noEmit`.
+- **`import type` / `export type` matters for bundlers.** TypeScript is lenient
+  — `import { Foo }` works whether `Foo` is a type or a value. Bundlers
+  (rolldown, inside tsdown) are strict: they need to know what's a runtime
+  value vs. a compile-time-only type so they can tree-shake correctly. If you
+  don't use `import type`, the bundler errors.
+- **`verbatimModuleSyntax`** enforces the `import type` distinction at the
+  TypeScript level and prevents `tsc` from rewriting your module syntax. This
+  makes the build/bundle boundary explicit: tsc checks types, the bundler
+  transforms modules. Without it, the bundler catches the mistake instead of
+  tsc.
+- **`skipLibCheck: true` is standard practice.** It tells tsc to skip
+  type-checking `.d.ts` files from third-party packages. Necessary when
+  dependencies have type errors or reference optional peer deps you haven't
+  installed — common with fast-moving tools like tsdown/rolldown on new TS
+  versions.
+- **Per-package build scripts in monorepos.** Each package owns its own
+  `"build": "tsdown"` script. The root orchestrates with `pnpm -r run build`,
+  which runs each package's build in dependency order. This replaces
+  `tsc --build` with its `references` graph.
 
 ### Checkpoint
 
