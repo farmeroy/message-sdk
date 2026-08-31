@@ -12,6 +12,7 @@
     "@types/node": "^26.4.0"
   },
   "scripts": {
-    "build": "pnpm tsdown --format cjs --format esm"
+    "build": "pnpm tsdown --format cjs --format esm",
+    "check": "pnpm tsc --noEmit"
   }
 }

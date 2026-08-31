@@ -9,6 +9,7 @@
     "import": "./dist/index.mjs"
   },
   "scripts": {
-    "build": "pnpm tsdown"
+    "build": "pnpm tsdown",
+    "check": "pnpm tsc --noEmit"
   }
 }
