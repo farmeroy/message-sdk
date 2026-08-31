@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.shared.json",
   "compilerOptions": {
     "types": ["node"],
-    "outDir": "./dist",
-    "composite": true
+    "composite": true,
+    "outDir": "./dist"
   }
 }
