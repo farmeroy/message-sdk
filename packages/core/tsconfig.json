@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.shared.json",
+  "exclude": ["./tsdown.config.ts"],
   "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
-    "composite": true
+    "composite": true,
   }
 }

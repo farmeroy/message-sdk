@@ -8,5 +8,8 @@
   "dependencies": {
     "@agent-message-sdk/core": "workspace:*",
     "@types/node": "^26.4.0"
+  },
+  "scripts": {
+    "build": "pnpm tsdown --format cjs --format esm"
   }
 }

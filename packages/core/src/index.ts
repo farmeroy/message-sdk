@@ -1,6 +1,6 @@
-import {Role, Message, ContentBlock, MessageCreateParams} from "./types";
+import type {Role, Message, ContentBlock, MessageCreateParams} from "./types";
 
-export {
+export type {
   Role,
   Message,
   ContentBlock,
