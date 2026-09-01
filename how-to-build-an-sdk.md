@@ -270,8 +270,7 @@ optionally adds a CJS fallback.
 
 ### Checkpoint
 
-You should be able to explain: why the SDK needs this pattern (it runs in
-VS Code extensions via Node AND in GitLab.com's web UI via the browser), and
+You should be able to explain: why the SDK needs this pattern, and
 how adapters "at the edges" keep the core portable. This maps directly to the
 JD's "isolate platform-specific behavior in adapters at the edges."
 
@@ -363,7 +362,7 @@ the patterns differ
   (they're not sent automatically).
 - **The SDK pattern**: your `AuthAdapter` already abstracts this. The Node
   adapter reads from env and sets headers. The browser adapter takes an explicit
-  key (or in GitLab's case, relies on cookies + CSRF). Same interface, different
+  key (or relies on cookies + CSRF). Same interface, different
   credential mechanics.
 
 ### Do
