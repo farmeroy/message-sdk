@@ -5,7 +5,7 @@ export class Client {
   #url = "https://api.anthropic.com/v1/messages"
   #messages: Message[] = []
   #systemPrompt: string
-  #model: Model// fix to haiku for now
+  #model: Model // fix to haiku for now
   #maxTokens = 1024
   constructor(systemPrompt = "", model: Model = "claude-haiku-4-5" ) {
     this.#systemPrompt = systemPrompt
