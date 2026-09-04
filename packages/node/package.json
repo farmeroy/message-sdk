@@ -2,9 +2,12 @@
 	"name": "@agent-message-sdk/node",
 	"version": "1.0.0",
 	"type": "module",
-	"main": "./dist/index.js",
 	"private": true,
 	"types": "./dist/index.d.ts",
+	"exports": {
+		"require": "./dist/index.cjs",
+		"import": "./dist/index.mjs"
+	},
 	"dependencies": {
 		"@agent-message-sdk/core": "workspace:*"
 	},
@@ -12,7 +15,7 @@
 		"@types/node": "^26.4.0"
 	},
 	"scripts": {
-		"build": "pnpm tsdown --format cjs --format esm",
+		"build": "pnpm tsdown",
 		"check": "pnpm tsc --noEmit"
 	}
 }

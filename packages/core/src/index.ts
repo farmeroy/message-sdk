@@ -33,6 +33,7 @@ export function createMessage({ role, content }: MessageCreateParams): Message {
 // we could then create a default response and use that at the caller if the parsing fails?
 // lots of design possibilities here
 export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
+	console.log({ r });
 	const parsedContent: ContentBlock[] = [];
 	if (r.content && Array.isArray(r.content)) {
 		r.content.forEach((block) => {

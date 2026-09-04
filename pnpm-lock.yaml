@@ -228,6 +228,9 @@ importers:
       '@agent-message-sdk/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-message-sdk/node':
+        specifier: workspace:*
+        version: link:../../packages/node
 
   packages/core: {}
 

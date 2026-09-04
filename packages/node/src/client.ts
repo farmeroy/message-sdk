@@ -20,17 +20,23 @@ export class Client {
 		const message: Message = { content: text, role: "user" };
 		this.#messages.push(message);
 		try {
+			if (process.env.ANTHROPIC_API_KEY == null) {
+				throw new Error("no api key in env");
+			}
 			const response = await fetch(this.#url, {
 				method: "POST",
 				headers: [
-					["x-api-key", process.env?.ANTHROPIC_API_KEY ?? ""],
+					["X-Api-Key", process.env?.ANTHROPIC_API_KEY ?? ""],
 					["anthropic-version", "2023-06-01"],
+					["Content-Type", "application/json"],
 				],
 				body: JSON.stringify({
-					system: {
-						type: "text",
-						text: this.#systemPrompt,
-					},
+					system: [
+						{
+							type: "text",
+							text: this.#systemPrompt,
+						},
+					],
 					max_tokens: this.#maxTokens,
 					model: this.#model,
 					messages: this.#messages,

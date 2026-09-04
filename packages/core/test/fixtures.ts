@@ -1,5 +1,23 @@
 export const emptyResponse = {};
 
+export const noAuthRespone = {
+	type: "error",
+	error: {
+		type: "authentication_error",
+		message: "x-api-key header is required",
+	},
+	request_id: "req_011CeiqrRWQU9NRKGCLeXTFH",
+};
+
+export const badSystemPromptResponse = {
+	type: "error",
+	error: {
+		type: "invalid_request_error",
+		message: "system: Input should be a valid array",
+	},
+	request_id: "req_011CeirTTD5M9j8LbxPCir7d",
+};
+
 export const fullResponseFixture = {
 	id: "msg_013Zva2CMHLNnXjNJJKqJ2EF",
 	container: {

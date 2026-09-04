@@ -1,5 +1,3 @@
-import { createMessage } from "@agent-message-sdk/core";
+import { Client } from "./client";
 
-const message = createMessage({ role: "user", content: "hello" });
-
-console.log({ message });
+export { Client };
