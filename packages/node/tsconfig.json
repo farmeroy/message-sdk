@@ -2,7 +2,9 @@
   "extends": "../../tsconfig.shared.json",
   "compilerOptions": {
     "types": ["node"],
+    "module": "esnext",
     "composite": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "moduleResolution": "bundler"
   }
 }

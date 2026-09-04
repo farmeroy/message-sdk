@@ -1,18 +1,19 @@
-import type {Role, Message, ContentBlock, MessageCreateParams} from "./types";
+import type {Role, Message, ContentBlock, MessageCreateParams, MessageResponse, Result, Model} from "./types.ts";
 
 export type {
   Role,
   Message,
   ContentBlock,
-  MessageCreateParams
+  MessageCreateParams,
+  MessageResponse,
+  Result,
+  Model
 }
 
 
-export function createMessage(content: string, role: Role): Message {
+export function createMessage({role, content}: MessageCreateParams): Message {
   return {
-    id: 'id',
     content,
-    type: "message",
     role
   }
 }

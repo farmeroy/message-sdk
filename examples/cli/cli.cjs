@@ -7,7 +7,7 @@ function main() {
     return;
   }
   const m = process.argv[2]
-  const message = createMessage(m, "user")
+  const message = createMessage({content:m, role:"user"})
   console.log({message})
 }
 

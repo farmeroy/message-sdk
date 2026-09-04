@@ -6,9 +6,9 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "pnpm -r run build",
-    "check": "pnpm -r run check"
+    "check": "pnpm -r run check",
+    "test": "pnpm -r run test"
   },
   "keywords": [],
   "author": "raffaele cataldo",

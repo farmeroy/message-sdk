@@ -1,5 +1,8 @@
 {
   "name": "@agent-message-sdk/examples-cli",
+  "scripts": {
+    "test": "pnpm vitest run"
+  },
   "dependencies": {
     "@agent-message-sdk/core": "workspace:*"
   }

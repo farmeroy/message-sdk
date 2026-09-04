@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "pnpm tsdown",
-    "check": "pnpm tsc --noEmit"
+    "check": "pnpm tsc --noEmit",
+    "test": "pnpm vitest run"
   }
 }
