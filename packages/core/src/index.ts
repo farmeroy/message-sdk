@@ -4,6 +4,7 @@ import type {
 	MessageCreateParams,
 	MessageResponse,
 	Model,
+	RawAnthropicMessageResponse,
 	Result,
 	Role,
 } from "./types.ts";
@@ -18,6 +19,7 @@ export type {
 	Role,
 };
 
+// just a simple function made for initially testing commonjs/module support
 export function createMessage({ role, content }: MessageCreateParams): Message {
 	return {
 		content,
@@ -25,10 +27,15 @@ export function createMessage({ role, content }: MessageCreateParams): Message {
 	};
 }
 
-export function parseResponse(r: any): MessageResponse {
+// TODO: this should probably return a result type so the caller knows if response was malformed/empty
+// rather than sending back a default response
+// this also makes me wonder, should the MessageResponse be a class we can instantiate?
+// we could then create a default response and use that at the caller if the parsing fails?
+// lots of design possibilities here
+export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
 	const parsedContent: ContentBlock[] = [];
 	if (r.content && Array.isArray(r.content)) {
-		r.content.forEach((block: any) => {
+		r.content.forEach((block) => {
 			if (block.type === "text") {
 				parsedContent.push({ text: block?.text ?? "", type: block.type });
 			}

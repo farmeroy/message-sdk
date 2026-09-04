@@ -39,6 +39,7 @@ export type AnthropicMessageResponse = {
 export type Model = AnthropicModel;
 
 export type MessageResponse = AnthropicMessageResponse;
+export type RawAnthropicMessageResponse = AnthropicMessageResponse;
 
 export type Result<T> = {
 	ok: boolean;
