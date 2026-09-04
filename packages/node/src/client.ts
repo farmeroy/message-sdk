@@ -1,4 +1,4 @@
-import type {Message, MessageResponse, Result, Model} from "@agent-message-sdk/core"
+import {type Message, type MessageResponse, type Result, type Model, parseResponse} from "@agent-message-sdk/core"
 
 
 export class Client {
@@ -16,9 +16,10 @@ export class Client {
     this.#messages.push(message);
     try {
       const response = await fetch(this.#url, {
-        method: "GET",
+        method: "POST",
         headers: [
-         ['x-api-key', process.env?.ANTHROPIC_API_KEY ?? '']
+          ['x-api-key', process.env?.ANTHROPIC_API_KEY ?? ''],
+          ['anthropic-version', '2023-06-01']
         ],
         body: JSON.stringify({
           system: {
@@ -31,14 +32,7 @@ export class Client {
         })
       })
       const r = await response.json()
-      const messageResponse: MessageResponse = {
-        id: r['id'] ?? '',
-        type: r['type'] ?? 'message',
-        role: r['role'] ?? 'assistant',
-        content: r['content'] ?? [],
-        model: r['model'] ?? this.#model,
-        stop_reason: r['stop_reason'] ?? 'none',
-      }
+      const messageResponse = parseResponse(r)
       return {ok: true, value: messageResponse}
     } catch (error) {
       if (error instanceof Error) {

@@ -33,7 +33,7 @@ export type AnthropicMessageResponse = {
   id: string,
   type: "message",
   role: "assistant",
-  content: Message[],
+  content: ContentBlock[],
   model: Model,
   stop_reason: string,
 }
