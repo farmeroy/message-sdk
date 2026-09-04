@@ -1,6 +1,6 @@
 {
-  "name": "@agent-message-sdk/examples-cli",
-  "dependencies": {
-    "@agent-message-sdk/core": "workspace:*"
-  }
+	"name": "@agent-message-sdk/examples-cli",
+	"dependencies": {
+		"@agent-message-sdk/core": "workspace:*"
+	}
 }

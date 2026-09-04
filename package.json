@@ -1,31 +1,31 @@
 {
-  "name": "agent-message-sdk",
-  "types": "module",
-  "version": "1.0.0",
-  "private": true,
-  "description": "",
-  "main": "./dist/index.js",
-  "scripts": {
-    "build": "pnpm -r run build",
-    "check": "pnpm -r run check",
-    "test": "pnpm -r run test"
-  },
-  "keywords": [],
-  "author": "raffaele cataldo",
-  "license": "ISC",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.20.0",
-      "onFail": "download"
-    }
-  },
-  "type": "module",
-  "devDependencies": {
-    "@biomejs/biome": "2.5.11",
-    "@types/node": "^26.4.0",
-    "tsdown": "^0.22.14",
-    "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
-  }
+	"name": "agent-message-sdk",
+	"types": "module",
+	"version": "1.0.0",
+	"private": true,
+	"description": "",
+	"main": "./dist/index.js",
+	"scripts": {
+		"build": "pnpm -r run build",
+		"check": "pnpm -r run check",
+		"test": "pnpm -r run test"
+	},
+	"keywords": [],
+	"author": "raffaele cataldo",
+	"license": "ISC",
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "^11.20.0",
+			"onFail": "download"
+		}
+	},
+	"type": "module",
+	"devDependencies": {
+		"@biomejs/biome": "2.5.11",
+		"@types/node": "^26.4.0",
+		"tsdown": "^0.22.14",
+		"typescript": "^7.0.2",
+		"vitest": "^4.1.11"
+	}
 }

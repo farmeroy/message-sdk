@@ -1,16 +1,16 @@
 {
-  "name": "@agent-message-sdk/core",
-  "type": "module",
-  "version": "1.0.0",
-  "private": true,
-  "types": "./dist/index.d.ts",
-  "exports": {
-    "require": "./dist/index.cjs",
-    "import": "./dist/index.mjs"
-  },
-  "scripts": {
-    "build": "pnpm tsdown",
-    "check": "pnpm tsc --noEmit",
-    "test": "pnpm vitest run"
-  }
+	"name": "@agent-message-sdk/core",
+	"type": "module",
+	"version": "1.0.0",
+	"private": true,
+	"types": "./dist/index.d.ts",
+	"exports": {
+		"require": "./dist/index.cjs",
+		"import": "./dist/index.mjs"
+	},
+	"scripts": {
+		"build": "pnpm tsdown",
+		"check": "pnpm tsc --noEmit",
+		"test": "pnpm vitest run"
+	}
 }

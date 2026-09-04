@@ -1,18 +1,18 @@
 {
-  "name": "@agent-message-sdk/node",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "private": true,
-  "types": "./dist/index.d.ts",
-  "dependencies": {
-    "@agent-message-sdk/core": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "^26.4.0"
-  },
-  "scripts": {
-    "build": "pnpm tsdown --format cjs --format esm",
-    "check": "pnpm tsc --noEmit"
-  }
+	"name": "@agent-message-sdk/node",
+	"version": "1.0.0",
+	"type": "module",
+	"main": "./dist/index.js",
+	"private": true,
+	"types": "./dist/index.d.ts",
+	"dependencies": {
+		"@agent-message-sdk/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^26.4.0"
+	},
+	"scripts": {
+		"build": "pnpm tsdown --format cjs --format esm",
+		"check": "pnpm tsc --noEmit"
+	}
 }

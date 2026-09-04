@@ -1,7 +1,4 @@
 {
-  "extends": "./tsconfig.shared.json",
-  "references": [
-    {"path": "./packages/core"},
-    {"path": "./packages/node"}
-  ]
+	"extends": "./tsconfig.shared.json",
+	"references": [{ "path": "./packages/core" }, { "path": "./packages/node" }]
 }
