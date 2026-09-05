@@ -1,24 +1,41 @@
 import { Client } from "@agent-message-sdk/node";
-import Fastify from 'fastify'
+import Fastify, {type RouteShorthandOptions} from 'fastify'
 
 
 const fastify = Fastify({
   logger: true
 })
 
-fastify.get('/health', function (_request, reply) {
+fastify.get('/health', async (_request, reply) => {
   reply.send("healthy")
 })
 
-fastify.post('/', async function (request, reply) {
+const opts: RouteShorthandOptions = {
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' }
+      }
+    }
+  }
+}
+
+
+fastify.post<{Body: {message: string}}>('/', opts, async (request, reply) => {
   const clientMessage: string = request.body.message;
   const client = new Client("be concise");
   try {
     const clientResponse = await client.sendMessage(clientMessage);
-    const text = clientResponse.value.content[0].text;
-    reply
-      .code(200)
-      .send(text);
+    if (clientResponse.ok) {
+      const {text} = clientResponse.value.content[0];
+       reply
+        .code(200)
+        .send(text);
+    } else {
+      const {error} = clientResponse;
+      reply.code(400).send({error});
+    }
   } catch (e) {
     reply
       .code(500)
@@ -26,10 +43,13 @@ fastify.post('/', async function (request, reply) {
   }
 })
 
-fastify.listen({port: 8080}, function (err, address) {
-  if (err) {
+const start = async () => {
+  try {
+    await fastify.listen({port: 8080})
+  } catch (err) {
     fastify.log.error(err);
-    process.exit(1);
+    process.exit(1)
   }
-  fastify.log.info(`server listening on ${address}`)
-})
+}
+
+start()

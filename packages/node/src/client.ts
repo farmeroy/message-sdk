@@ -47,9 +47,9 @@ export class Client {
 			return { ok: true, value: messageResponse };
 		} catch (error) {
 			if (error instanceof Error) {
-				return { ok: false, value: error.message };
+				return { ok: false, error: error.message };
 			} else {
-				return { ok: false, value: String(error) };
+				return { ok: false, error: String(error) };
 			}
 		}
 	}
