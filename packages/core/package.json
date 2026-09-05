@@ -11,6 +11,7 @@
 	"scripts": {
 		"build": "pnpm tsdown",
 		"check": "pnpm tsc --noEmit",
-		"test": "pnpm vitest run"
+		"test": "pnpm vitest run",
+    "dev": "pnpm tsdown --watch"
 	}
 }

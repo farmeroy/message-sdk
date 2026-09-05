@@ -16,6 +16,7 @@
 	},
 	"scripts": {
 		"build": "pnpm tsdown",
-		"check": "pnpm tsc --noEmit"
+		"check": "pnpm tsc --noEmit",
+    "dev": "pnpm tsdown --watch"
 	}
 }
