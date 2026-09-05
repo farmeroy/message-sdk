@@ -1,18 +1,17 @@
-// @ts-check
+import { Client } from "@agent-message-sdk/node";
 import Fastify from 'fastify'
 
-import { Client } from "@agent-message-sdk/node";
 
 const fastify = Fastify({
   logger: true
 })
 
-fastify.get('/health', function (request, reply) {
+fastify.get('/health', function (_request, reply) {
   reply.send("healthy")
 })
 
 fastify.post('/', async function (request, reply) {
-  const clientMessage = request.body.message;
+  const clientMessage: string = request.body.message;
   const client = new Client("be concise");
   try {
     const clientResponse = await client.sendMessage(clientMessage);
