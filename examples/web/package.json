@@ -3,17 +3,34 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.mjs",
-  "scripts": {
-    "dev": "node --env-file=.env --watch-path=./server server/index.ts"
-  },
-  "keywords": [],
+  "private": true,
   "author": "",
   "license": "ISC",
   "type": "module",
+  "scripts": {
+    "dev:server": "node --env-file=.env --watch-path=./server server/index.ts",
+    "dev:client": "vite",
+    "build:client": "run-p type-check \"build-only {@}\" --",
+    "preview:client": "vite preview",
+    "build-only:client": "vite build",
+    "type-check:client": "vue-tsc --build"
+  },
+  "keywords": [],
   "dependencies": {
     "@agent-message-sdk/core": "workspace:*",
     "@agent-message-sdk/node": "workspace:*",
     "fastify": "^5.12.1",
-    "fastify-cli": "^8.0.0"
+    "fastify-cli": "^8.0.0",
+    "vue": "^3.5.40"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/tsconfig": "^0.9.1",
+    "npm-run-all2": "^9.0.2",
+    "vite": "^8.1.5",
+    "vite-plugin-vue-devtools": "^8.1.5",
+    "vue-tsc": "^3.3.7"
   }
 }
