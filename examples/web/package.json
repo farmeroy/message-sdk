@@ -19,6 +19,7 @@
   "dependencies": {
     "@agent-message-sdk/core": "workspace:*",
     "@agent-message-sdk/node": "workspace:*",
+    "@fastify/cors": "^11.3.0",
     "fastify": "^5.12.1",
     "fastify-cli": "^8.0.0",
     "vue": "^3.5.40"
