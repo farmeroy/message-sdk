@@ -1,3 +1,4 @@
+import { parseSSEStream } from "@agent-message-sdk/core";
 import {
 	type Message,
 	type MessageResponse,
@@ -44,25 +45,11 @@ export class Client {
 				}),
 			});
 			// the response.body itself is an async iterable
-			if (response.body) {
-        const textDecoder = new TextDecoder("utf-8");
-        let buffer = ""; 
-				for await (const chunk of response.body) {
-					// we need to parse each chun
-          const text = textDecoder.decode(chunk, {stream: true});
-          buffer += text;
-          const sep = buffer.indexOf("\n\n");
-          if (sep >= 0) {
-            const completeData = buffer.slice(0,sep)
-            buffer = buffer.slice(sep + 2)
-            const lines = splitOnce(completeData, '\n');
-            const event = splitOnce(lines[0], ":");
-            const data = splitOnce(lines[1], ":");
-            yield {event: event[1].trim(), data: JSON.parse(data[1])}
-          }
-				}
-			} else {
+			if (!response.body) {
 				throw new Error("No response body");
+			}
+			for await (const delta of parseSSEStream(response.body)) {
+				yield delta;
 			}
 		} catch (err) {
 			console.error(err);
@@ -105,10 +92,4 @@ export class Client {
 			}
 		}
 	}
-}
-
-function splitOnce(s: string, c: string): Array<string> {
-  const index = s.indexOf(c);
-  if (!index) return [];
-  return [s.substring(0, index), s.substring(index + c.length)]
 }

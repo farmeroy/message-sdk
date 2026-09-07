@@ -22,8 +22,9 @@ async function main() {
 	try {
 		for await (const delta of client.streamMessage(
 			"write three more version",
-		)) {
-			console.log({ delta });
+    )) {
+      const {event, data} = delta;
+			console.log({ event, data });
 		}
 	} catch (e) {
 		console.error(e);

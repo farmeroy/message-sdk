@@ -2,6 +2,42 @@ import type { RawAnthropicMessageResponse } from "../src/types";
 
 export const emptyResponse = {};
 
+
+// clean: one complete event per chunk
+  export const clean = [
+    `event: content_block_delta\ndata: 
+  {"type":"content_block_delta","index":0,"delta":{"type"
+  :"text_delta","text":"Hello"}}\n\n`,
+  ];
+
+  // split mid-event: one event arrives across two chunks
+  export const splitMid = [
+    `event: content_block_delta\ndata: 
+  {"type":"content_block_`,
+    `delta","index":0,"delta":{"type":"text_delta","text"
+  :"Hello"}}\n\n`,
+  ];
+
+  // two events in one chunk
+  export const twoInOne = [
+    `event: content_block_delta\ndata:
+  {"type":"content_block_delta","index":0,"delta":{"type"
+  :"text_delta","text":"Hel"}}\n\nevent:
+  content_block_delta\ndata: 
+  {"type":"content_block_delta","index":0,"delta":{"type"
+  :"text_delta","text":"lo"}}\n\n`,
+  ];
+
+  // split on the delimiter itself
+  export const splitOnDelimiter = [
+    `event: content_block_delta\ndata: 
+  {"type":"content_block_delta","index":0,"delta":{"type"
+  :"text_delta","text":"Hi"}}\n`,
+    `\nevent: content_block_delta\ndata: 
+  {"type":"content_block_delta","index":0,"delta":{"type"
+  :"text_delta","text":"!"}}\n\n`,
+  ];
+
 export const noAuthRespone = {
 	type: "error",
 	error: {

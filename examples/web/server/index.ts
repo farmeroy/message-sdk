@@ -7,18 +7,19 @@ const fastify = Fastify({
 });
 
 fastify.register(cors, {
-	origin: (origin, cb) => {
-		if (!origin) {
-			cb(new Error("no origin"), false);
-			return;
-		}
-		const hostname = new URL(origin).hostname;
-		if (hostname === "localhost") {
-			cb(null, true);
-			return;
-		}
-		cb(new Error("Not allowed"), false);
-	},
+	origin: true,
+	// origin: (origin, cb) => {
+	// 	if (!origin) {
+	// 		cb(new Error("no origin"), false);
+	// 		return;
+	// 	}
+	// 	const hostname = new URL(origin).hostname;
+	// 	if (hostname === "localhost") {
+	// 		cb(null, true);
+	// 		return;
+	// 	}
+	// 	cb(new Error("Not allowed"), false);
+	// },
 });
 
 fastify.get("/health", async (_request, reply) => {
