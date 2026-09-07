@@ -10,13 +10,21 @@ async function main() {
 	const client = new Client("You are a poet");
 	try {
 		const response = await client.sendMessage(m);
-    console.log(response);
-    if (response.ok) {
-		  console.log(response.value.content);
-    } else {
-      console.error(response.value);
-    }
-		return;
+		console.log(response);
+		if (response.ok) {
+			console.log(response.value.content);
+		} else {
+			console.error(response.error);
+		}
+	} catch (e) {
+		console.error(e);
+	}
+	try {
+		for await (const delta of client.streamMessage(
+			"write three more version",
+		)) {
+			console.log({ delta });
+		}
 	} catch (e) {
 		console.error(e);
 	}
