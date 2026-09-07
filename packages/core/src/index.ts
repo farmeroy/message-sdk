@@ -32,6 +32,7 @@ export function createMessage({ role, content }: MessageCreateParams): Message {
 // this also makes me wonder, should the MessageResponse be a class we can instantiate?
 // we could then create a default response and use that at the caller if the parsing fails?
 // lots of design possibilities here
+// TODO: we aren't really parsing, just passing through
 export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
 	console.log({ r });
 	const parsedContent: ContentBlock[] = [];
@@ -45,7 +46,7 @@ export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
 	const messageResponse: MessageResponse = {
 		id: r.id ?? "",
 		type: r.type ?? "message",
-		role: r.role ?? "assistant",
+		role: (r.role as Role) ?? "assistant", // TODO parse the role or return parse error
 		content: parsedContent,
 		model: r.model ?? "",
 		stop_reason: r.stop_reason ?? "none",

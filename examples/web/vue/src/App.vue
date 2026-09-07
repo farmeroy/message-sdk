@@ -1,39 +1,42 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import { ref } from 'vue';
-import { type Message } from '@agent-message-sdk/core';
+import HelloWorld from "./components/HelloWorld.vue";
+import { ref } from "vue";
+import { type Message } from "@agent-message-sdk/core";
 
 const messages = ref<Message[]>([]);
-const input = ref('');
+const input = ref("");
 const loading = ref(false);
 
 async function sendMessage() {
-  const text = input.value.trim();
-  if (!text || loading.value) return;
+	const text = input.value.trim();
+	if (!text || loading.value) return;
 
-  messages.value.push({ role: 'user', content: text });
-  input.value = '';
-  loading.value = true;
+	messages.value.push({ role: "user", content: text });
+	input.value = "";
+	loading.value = true;
 
-  try {
-    const res = await fetch('http://localhost:8080/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text }),
-    });
-    const reply = await res.text();
-    messages.value.push({ role: 'assistant', content: reply });
-  } catch (e) {
-    console.error({e});
-    messages.value.push({ role: 'assistant', content: 'Error: request failed' });
-  } finally {
-    loading.value = false;
-  }
+	try {
+		const res = await fetch("http://localhost:8080/", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ message: text }), // TODO: this should sent the whole array
+		});
+		const reply = await res.text();
+		messages.value.push({ role: "assistant", content: reply });
+	} catch (e) {
+		console.error({ e });
+		messages.value.push({
+			role: "assistant",
+			content: "Error: request failed",
+		});
+	} finally {
+		loading.value = false;
+	}
 }
 
 function getDisplayText(msg: Message): string {
-  if (typeof msg.content === 'string') return msg.content;
-  return msg.content.map(b => b.text).join('');
+	if (typeof msg.content === "string") return msg.content;
+	return msg.content.map((b) => b.text).join("");
 }
 </script>
 

@@ -10,6 +10,6 @@ test("parses full anthropic response", () => {
 		model: "claude-sonnet-5",
 		stop_reason: "end_turn",
 		role: "assistant",
-	};
+	} as const;
 	expect(parseResponse(fullResponseFixture)).toEqual(expected);
 });

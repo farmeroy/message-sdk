@@ -9,7 +9,7 @@
 		"build": "pnpm -r run build",
 		"check": "pnpm -r run check",
 		"test": "pnpm -r run test",
-    "dev": "pnpm -r --parallel run /dev.*/"
+		"dev": "pnpm -r --parallel run /dev.*/"
 	},
 	"keywords": [],
 	"author": "raffaele cataldo",

@@ -1,19 +1,16 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vueDevTools from "vite-plugin-vue-devtools";
 
 // https://vite.dev/config/
 export default defineConfig({
-  root: './vue',
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./vue/src', import.meta.url)),
-    },
-  },
-})
+	root: "./vue",
+	plugins: [vue(), vueDevTools()],
+	resolve: {
+		alias: {
+			"@": fileURLToPath(new URL("./vue/src", import.meta.url)),
+		},
+	},
+});
