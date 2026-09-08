@@ -45,6 +45,38 @@ export type Model = AnthropicModel;
 
 export type MessageResponse = AnthropicMessageResponse;
 
+export type AnthropicStreamEvent =
+	| {
+			event: "message_start";
+			data: {
+				type: "message_start";
+				message: {
+					model: string;
+					role: string;
+					type: "message";
+					content: [];
+				};
+			};
+	  }
+	| {
+			event: "content_block_start";
+			data: {
+				type: "content_block_start";
+				index: number;
+				content_block: ContentBlock;
+			};
+	  }
+	| {
+			event: "content_block_delta";
+			data: {
+				type: "content_block_delta";
+				index: number;
+				delta: ContentBlock;
+			};
+	  };
+
+export type AnthropicStreamEventContentBlock = {};
+
 export type RawAnthropicMessageResponse = {
 	id: string;
 	container?: object;

@@ -1,4 +1,5 @@
 import { Client } from "@agent-message-sdk/node";
+import readline from "node:readline";
 
 async function main() {
 	if (process.argv.length < 3) {
@@ -6,30 +7,48 @@ async function main() {
 		process.exitCode = 1;
 		return;
 	}
-	const m = process.argv[2];
-	const client = new Client("You are a poet");
-	try {
-		const response = await client.sendMessage(m);
-		console.log(response);
-		if (response.ok) {
-			console.log(response.value.content);
-		} else {
-			console.error(response.error);
+	if (process.argv[2] === "chat") {
+		const client = new Client("you are a helpful and creative soul");
+		const rl = readline.createInterface({
+			input: process.stdin,
+			output: process.stdout,
+		});
+		const prompt = (q) => new Promise((resolve) => rl.question(q, resolve));
+		while (true) {
+			try {
+				const input = await prompt("> ");
+				if (input === "exit") {
+					rl.close();
+					return;
+				}
+				rl.pause();
+
+				for await (const delta of client.streamMessage(input)) {
+					if (delta.event == "content_block_delta") {
+						rl.output.write(delta.data.delta.text);
+					}
+				}
+				process.stdout.write("\n");
+				rl.resume();
+			} catch (e) {
+				console.error(e);
+			}
 		}
-	} catch (e) {
-		console.error(e);
-	}
-	try {
-		for await (const delta of client.streamMessage(
-			"write three more version",
-    )) {
-      const {event, data} = delta;
-			console.log({ event, data });
+	} else {
+		const m = process.argv[2];
+		const client = new Client("You are a poet");
+		try {
+			const response = await client.sendMessage(m);
+			console.log(response);
+			if (response.ok) {
+				console.log(response.value.content);
+			} else {
+				console.error(response.error);
+			}
+		} catch (e) {
+			console.error(e);
 		}
-	} catch (e) {
-		console.error(e);
 	}
-	return;
 }
 
 main();

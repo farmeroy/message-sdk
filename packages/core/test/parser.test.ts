@@ -1,8 +1,7 @@
 import { type MessageResponse, parseResponse } from "@agent-message-sdk/core";
 import { expect, test } from "vitest";
-import {clean, fullResponseFixture, splitMid} from "./fixtures";
-import {parseSSEStream} from "../src";
-
+import { clean, fullResponseFixture, splitMid } from "./fixtures";
+import { parseSSEStream } from "../src";
 
 test("parses full anthropic response", () => {
 	const expected: MessageResponse = {
@@ -16,49 +15,51 @@ test("parses full anthropic response", () => {
 	expect(parseResponse(fullResponseFixture)).toEqual(expected);
 });
 
-
 async function* streamable(chunks: Array<string>) {
-  const encoder = new TextEncoder;
-  for (const chunk of chunks) {
-    yield encoder.encode(chunk);
-  }
- }
+	const encoder = new TextEncoder();
+	for (const chunk of chunks) {
+		yield encoder.encode(chunk);
+	}
+}
 
 test("parse clean stream", async () => {
-  const expected = [{
-    event: "content_block_delta",
-    data: {
-      type: "content_block_delta",
-      index: 0,
-      delta: {
-        type: "text_delta",
-        text: "Hello"
-      }
-    }
-  }]
-  const result = [];
-  for await (const chunk of parseSSEStream(streamable(clean))) {
-    result.push(chunk);
-  }
-  expect(result).toEqual(expected);
-})
+	const expected = [
+		{
+			event: "content_block_delta",
+			data: {
+				type: "content_block_delta",
+				index: 0,
+				delta: {
+					type: "text_delta",
+					text: "Hello",
+				},
+			},
+		},
+	];
+	const result = [];
+	for await (const chunk of parseSSEStream(streamable(clean))) {
+		result.push(chunk);
+	}
+	expect(result).toEqual(expected);
+});
 
 test("parse a split event stream", async () => {
-  const expected = [{
-    event: "content_block_delta",
-    data: {
-      type: "content_block_delta",
-      index: 0,
-      delta: {
-        type: "text_delta",
-        text: "Hello"
-      }
-    }
-  }]
-  const result = [];
-  for await (const chunk of parseSSEStream(streamable(splitMid))) {
-    result.push(chunk);
-  }
-  expect(result).toEqual(expected);
-
-})
+	const expected = [
+		{
+			event: "content_block_delta",
+			data: {
+				type: "content_block_delta",
+				index: 0,
+				delta: {
+					type: "text_delta",
+					text: "Hello",
+				},
+			},
+		},
+	];
+	const result = [];
+	for await (const chunk of parseSSEStream(streamable(splitMid))) {
+		result.push(chunk);
+	}
+	expect(result).toEqual(expected);
+});

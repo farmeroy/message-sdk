@@ -46,18 +46,18 @@ export async function* parseSSEStream(
 		buffer += text;
 		// complete events are separated by two new lines
 		// while there is \n\n in the buffer we need to process events
-    while (buffer.indexOf("\n\n") > -1) {
-      // everything until the double new line is a single complete event
-      const [completeData, rest] = splitOnce(buffer, "\n\n");
-      // send the rest to the buffer
-      buffer = rest;
-      // event and data are separated by a new line char
-      // anthropic only sends event and data fields
-      // this does not implement the mime type correctly
+		while (buffer.indexOf("\n\n") > -1) {
+			// everything until the double new line is a single complete event
+			const [completeData, rest] = splitOnce(buffer, "\n\n");
+			// send the rest to the buffer
+			buffer = rest;
+			// event and data are separated by a new line char
+			// anthropic only sends event and data fields
+			// this does not implement the mime type correctly
 			const lines = splitOnce(completeData, "\n");
 			const event = splitOnce(lines[0], ":");
-      const data = splitOnce(lines[1], ":");
-      // generic event-stream data isn't always valid json so this should be handled differently
+			const data = splitOnce(lines[1], ":");
+			// generic event-stream data isn't always valid json so this should be handled differently
 			yield { event: event[1].trim(), data: JSON.parse(data[1]) };
 		}
 	}

@@ -1,4 +1,5 @@
 import type {
+	AnthropicStreamEvent,
 	ContentBlock,
 	Message,
 	MessageCreateParams,
@@ -8,12 +9,12 @@ import type {
 	Role,
 } from "./types.ts";
 
-import {parseResponse, parseSSEStream} from "./parser.js";
+import { parseResponse, parseSSEStream } from "./parser.js";
 
-export {parseResponse, parseSSEStream};
-
+export { parseResponse, parseSSEStream };
 
 export type {
+	AnthropicStreamEvent,
 	ContentBlock,
 	Message,
 	MessageCreateParams,
