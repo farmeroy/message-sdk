@@ -13,7 +13,8 @@ async function main() {
 			input: process.stdin,
 			output: process.stdout,
 		});
-		const prompt = (q) => new Promise((resolve) => rl.question(q, resolve));
+		const prompt = (q: string) =>
+			new Promise<string>((resolve) => rl.question(q, resolve));
 		while (true) {
 			try {
 				const input = await prompt("> ");
@@ -22,12 +23,21 @@ async function main() {
 					return;
 				}
 				rl.pause();
+				process.stdout.write("\n");
 
+				// here we will have to manually handle each event
+				// this is good if the application has to do custom things,
+				// but maybe it makes sense to pass the stream or read method a writer to write to?
+				// or call client.display(stream)?
 				for await (const delta of client.streamMessage(input)) {
-					if (delta.event == "content_block_delta") {
-						rl.output.write(delta.data.delta.text);
+					if (
+						delta.event === "content_block_delta" &&
+						delta.data.delta.type === "text_delta"
+					) {
+						process.stdout.write(delta.data.delta.text);
 					}
 				}
+
 				process.stdout.write("\n");
 				rl.resume();
 			} catch (e) {

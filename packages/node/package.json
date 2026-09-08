@@ -5,8 +5,14 @@
 	"private": true,
 	"types": "./dist/index.d.ts",
 	"exports": {
-		"require": "./dist/index.cjs",
-		"import": "./dist/index.mjs"
+		"require": {
+			"default": "./dist/index.cjs",
+			"types": "./dist/index.d.cts"
+		},
+		"import": {
+			"default": "./dist/index.mjs",
+			"types": "./dist/index.d.mts"
+		}
 	},
 	"dependencies": {
 		"@agent-message-sdk/core": "workspace:*"

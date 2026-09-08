@@ -1,7 +1,7 @@
 import { parseSSEStream } from "@agent-message-sdk/core";
 import {
 	type ContentBlock,
-	AnthropicStreamEvent,
+	type AnthropicStreamEvent,
 	type Message,
 	type MessageResponse,
 	type Model,
@@ -24,7 +24,7 @@ export class Client {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
 	}
-	async *streamMessage(text: string): AsyncGenerator {
+	async *streamMessage(text: string): AsyncGenerator<AnthropicStreamEvent> {
 		const message: Message = { content: text, role: "user" };
 		this.#messages.push(message);
 		try {
@@ -67,7 +67,7 @@ export class Client {
 				// we need to aggregate the raw message
 				// this message aggregation should be part of the core package
 				// so i can reuse it in browser node etc.
-				const event = delta as AnthropicStreamEvent;
+				const event = delta;
 				if (event.event === "message_start") {
 					aggregateResponse.role = "assistant";
 				} else if (event.event === "content_block_start") {
@@ -78,7 +78,7 @@ export class Client {
 					const currentBlock =
 						aggregateResponse.content[aggregateResponse.content.length - 1];
 					// right now we only handle text types anyway, but we should check
-					if ((event.data.delta.type = "text_delta")) {
+					if (event.data.delta.type === "text_delta") {
 						currentBlock.text += event.data.delta.text;
 					}
 				}

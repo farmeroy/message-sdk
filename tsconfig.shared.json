@@ -12,6 +12,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"skipLibCheck": true,
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"moduleResolution": "bundler"
 	}
 }

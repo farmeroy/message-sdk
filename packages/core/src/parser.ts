@@ -1,4 +1,5 @@
 import type {
+	AnthropicStreamEvent,
 	ContentBlock,
 	MessageResponse,
 	RawAnthropicMessageResponse,
@@ -36,7 +37,7 @@ export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
 // this parser is specific to the events defined in anthropic v1 messages api
 export async function* parseSSEStream(
 	body: AsyncIterable<Uint8Array<ArrayBuffer>>,
-): AsyncGenerator {
+): AsyncGenerator<AnthropicStreamEvent> {
 	const textDecoder = new TextDecoder("utf-8");
 	let buffer = "";
 	for await (const chunk of body) {
