@@ -1,7 +1,7 @@
-import { type MessageResponse, parseResponse } from "@agent-message-sdk/core";
+import { type MessageResponse } from "../src/types";
 import { expect, test } from "vitest";
 import { clean, fullResponseFixture, splitMid } from "./fixtures";
-import { parseSSEStream } from "../src";
+import { parseSSEStream, parseResponse } from "../src/parser";
 
 test("parses full anthropic response", () => {
 	const expected: MessageResponse = {

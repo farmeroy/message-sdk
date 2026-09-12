@@ -1,4 +1,4 @@
-import { Client } from "@agent-message-sdk/node";
+import { Client } from "@agent-message-sdk/core";
 import readline from "node:readline";
 
 async function main() {

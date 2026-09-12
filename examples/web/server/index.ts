@@ -1,4 +1,4 @@
-import { Client } from "@agent-message-sdk/node";
+import { Client } from "@agent-message-sdk/core";
 import cors from "@fastify/cors";
 import Fastify, { type RouteShorthandOptions } from "fastify";
 

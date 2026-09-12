@@ -7,10 +7,12 @@ export type Message = {
 
 export type Role = "assistant" | "user";
 
-export type ContentBlock = {
-	citations?: object; // not using this at the moment so type obeject is enough
+export type ContentBlock = TextBlock; // TODO this only handles textblocks now
+
+type TextBlock = {
+	citations?: object; // not using this at the moment so type object is enough
+	type: "text";
 	text: string;
-	type: string;
 };
 
 export type MessageCreateParams = {
@@ -45,37 +47,46 @@ export type Model = AnthropicModel;
 
 export type MessageResponse = AnthropicMessageResponse;
 
-export type AnthropicStreamEvent =
+type ContentBlockStartData = {
+	type: "content_block_start";
+	index: number;
+	content_block: TextBlock;
+};
+
+type ContentBlockDeltaData = {
+	type: "content_block_delta";
+	index: number;
+	delta: TextDelta;
+};
+
+type TextDelta = {
+	type: "text_delta";
+	text: string;
+};
+
+type MessageStartData = {
+	type: "message_start";
+	message: {
+		model: string;
+		role: string;
+		type: "message";
+		content: [];
+	};
+};
+
+export type AnthropicStreamResponse =
 	| {
 			event: "message_start";
-			data: {
-				type: "message_start";
-				message: {
-					model: string;
-					role: string;
-					type: "message";
-					content: [];
-				};
-			};
+			data: MessageStartData;
 	  }
 	| {
 			event: "content_block_start";
-			data: {
-				type: "content_block_start";
-				index: number;
-				content_block: ContentBlock;
-			};
+			data: ContentBlockStartData;
 	  }
 	| {
 			event: "content_block_delta";
-			data: {
-				type: "content_block_delta";
-				index: number;
-				delta: ContentBlock;
-			};
+			data: ContentBlockDeltaData;
 	  };
-
-export type AnthropicStreamEventContentBlock = {};
 
 export type RawAnthropicMessageResponse = {
 	id: string;

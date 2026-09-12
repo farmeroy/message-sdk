@@ -1,5 +1,5 @@
 import type {
-	AnthropicStreamEvent,
+	AnthropicStreamResponse,
 	ContentBlock,
 	Message,
 	MessageCreateParams,
@@ -9,12 +9,12 @@ import type {
 	Role,
 } from "./types.ts";
 
-import { parseResponse, parseSSEStream } from "./parser.js";
+import { Client } from "./client.js";
 
-export { parseResponse, parseSSEStream };
+export { Client };
 
 export type {
-	AnthropicStreamEvent,
+	AnthropicStreamResponse,
 	ContentBlock,
 	Message,
 	MessageCreateParams,

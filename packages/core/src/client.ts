@@ -1,13 +1,12 @@
-import { parseSSEStream } from "@agent-message-sdk/core";
+import { parseSSEStream, parseResponse } from "./parser";
 import {
 	type ContentBlock,
-	type AnthropicStreamEvent,
+	type AnthropicStreamResponse,
 	type Message,
 	type MessageResponse,
 	type Model,
-	parseResponse,
 	type Result,
-} from "@agent-message-sdk/core";
+} from "./types";
 
 export class Client {
 	// hardcoded now to v1 anthropic messages api
@@ -23,8 +22,28 @@ export class Client {
 	constructor(systemPrompt = "", model: Model = "claude-haiku-4-5") {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
-	}
-	async *streamMessage(text: string): AsyncGenerator<AnthropicStreamEvent> {
+  }
+  async #aggregateStream(delta: AnthropicStreamResponse, aggregateResponse: Message) {
+				// we need to aggregate the raw message
+				// this message aggregation should be part of the core package
+				// so i can reuse it in browser node etc.
+				if (delta.event === "message_start") {
+					aggregateResponse.role = "assistant";
+				} else if (delta.event === "content_block_start") {
+					// we are keeping a 'buffer' in the last element of the array
+					aggregateResponse.content.push(delta.data.content_block);
+				} else if (delta.event === "content_block_delta") {
+					// access the last element
+					const currentBlock =
+						aggregateResponse.content[aggregateResponse.content.length - 1];
+					// right now we only handle text types anyway, but we should check
+					if (delta.data.delta.type === "text_delta") {
+						currentBlock.text += delta.data.delta.text;
+					}
+				}
+
+  }
+	async *streamMessage(text: string): AsyncGenerator<AnthropicStreamResponse> {
 		const message: Message = { content: text, role: "user" };
 		this.#messages.push(message);
 		try {
@@ -57,31 +76,14 @@ export class Client {
 			}
 			const aggregateResponse: {
 				role: "assistant";
-				content: ContentBlock[];
+				content: ContentBlock[]; // this only handles text blocks
 			} = {
 				role: "assistant",
 				content: [],
 			};
 			// we need another pipeline
 			for await (const delta of parseSSEStream(response.body)) {
-				// we need to aggregate the raw message
-				// this message aggregation should be part of the core package
-				// so i can reuse it in browser node etc.
-				const event = delta;
-				if (event.event === "message_start") {
-					aggregateResponse.role = "assistant";
-				} else if (event.event === "content_block_start") {
-					// we are keeping a 'buffer' in the last element of the array
-					aggregateResponse.content.push(event.data.content_block);
-				} else if (event.event === "content_block_delta") {
-					// access the last element
-					const currentBlock =
-						aggregateResponse.content[aggregateResponse.content.length - 1];
-					// right now we only handle text types anyway, but we should check
-					if (event.data.delta.type === "text_delta") {
-						currentBlock.text += event.data.delta.text;
-					}
-				}
+        this.#aggregateStream(delta, aggregateResponse)
 				yield delta;
 			}
 			this.#messages.push(aggregateResponse);

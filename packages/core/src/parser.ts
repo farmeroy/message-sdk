@@ -1,5 +1,5 @@
 import type {
-	AnthropicStreamEvent,
+	AnthropicStreamResponse,
 	ContentBlock,
 	MessageResponse,
 	RawAnthropicMessageResponse,
@@ -13,7 +13,7 @@ import type {
 // lots of design possibilities here
 // TODO: we aren't really parsing, just passing through
 export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
-	console.log({ r });
+	// console.log({ r });
 	const parsedContent: ContentBlock[] = [];
 	if (r.content && Array.isArray(r.content)) {
 		r.content.forEach((block) => {
@@ -37,7 +37,7 @@ export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
 // this parser is specific to the events defined in anthropic v1 messages api
 export async function* parseSSEStream(
 	body: AsyncIterable<Uint8Array<ArrayBuffer>>,
-): AsyncGenerator<AnthropicStreamEvent> {
+): AsyncGenerator<AnthropicStreamResponse> {
 	const textDecoder = new TextDecoder("utf-8");
 	let buffer = "";
 	for await (const chunk of body) {
@@ -59,7 +59,12 @@ export async function* parseSSEStream(
 			const event = splitOnce(lines[0], ":");
 			const data = splitOnce(lines[1], ":");
 			// generic event-stream data isn't always valid json so this should be handled differently
-			yield { event: event[1].trim(), data: JSON.parse(data[1]) };
+			// just cast as an AnthropicStreamResponse event - all event names are valid, but when we _use_ the resposne
+			// is when we care about the name
+			yield {
+				event: event[1].trim() as AnthropicStreamResponse["event"],
+				data: JSON.parse(data[1]),
+			};
 		}
 	}
 }
