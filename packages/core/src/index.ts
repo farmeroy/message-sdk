@@ -9,7 +9,7 @@ import type {
 	Role,
 } from "./types.ts";
 
-import { Client } from "./client.js";
+import { Client } from "./client";
 
 export { Client };
 

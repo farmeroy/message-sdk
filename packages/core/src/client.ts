@@ -1,7 +1,10 @@
-import { parseSSEStream, parseResponse } from "./parser";
+import {
+	readEventStream,
+	parseResponse,
+	parseAnthropicStreamResponse,
+} from "./parser";
 import {
 	type ContentBlock,
-	type AnthropicStreamResponse,
 	type Message,
 	type MessageResponse,
 	type Model,
@@ -22,28 +25,8 @@ export class Client {
 	constructor(systemPrompt = "", model: Model = "claude-haiku-4-5") {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
-  }
-  async #aggregateStream(delta: AnthropicStreamResponse, aggregateResponse: Message) {
-				// we need to aggregate the raw message
-				// this message aggregation should be part of the core package
-				// so i can reuse it in browser node etc.
-				if (delta.event === "message_start") {
-					aggregateResponse.role = "assistant";
-				} else if (delta.event === "content_block_start") {
-					// we are keeping a 'buffer' in the last element of the array
-					aggregateResponse.content.push(delta.data.content_block);
-				} else if (delta.event === "content_block_delta") {
-					// access the last element
-					const currentBlock =
-						aggregateResponse.content[aggregateResponse.content.length - 1];
-					// right now we only handle text types anyway, but we should check
-					if (delta.data.delta.type === "text_delta") {
-						currentBlock.text += delta.data.delta.text;
-					}
-				}
-
-  }
-	async *streamMessage(text: string): AsyncGenerator<AnthropicStreamResponse> {
+	}
+	async *streamMessage(text: string): AsyncGenerator<ContentBlock> {
 		const message: Message = { content: text, role: "user" };
 		this.#messages.push(message);
 		try {
@@ -79,15 +62,17 @@ export class Client {
 				content: ContentBlock[]; // this only handles text blocks
 			} = {
 				role: "assistant",
-				content: [],
+				content: [{ type: "text", text: "" }],
 			};
 			// we need another pipeline
-			for await (const delta of parseSSEStream(response.body)) {
-        this.#aggregateStream(delta, aggregateResponse)
-				yield delta;
+			for await (const streamResponse of parseAnthropicStreamResponse(
+				readEventStream(response.body),
+			)) {
+				yield streamResponse;
+				aggregateResponse.content[0].text += streamResponse.text;
 			}
 			this.#messages.push(aggregateResponse);
-			// console.log(this.#messages);
+			console.log(this.#messages);
 		} catch (err) {
 			console.error(err);
 		}

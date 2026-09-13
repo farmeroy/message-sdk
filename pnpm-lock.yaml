@@ -231,6 +231,10 @@ importers:
       '@agent-message-sdk/node':
         specifier: workspace:*
         version: link:../../packages/node
+    devDependencies:
+      '@types/node':
+        specifier: ^26.4.0
+        version: 26.4.0
 
   examples/web:
     dependencies:
@@ -278,7 +282,11 @@ importers:
         specifier: ^3.3.7
         version: 3.3.11(typescript@7.0.2)
 
-  packages/core: {}
+  packages/core:
+    devDependencies:
+      '@types/node':
+        specifier: ^26.4.0
+        version: 26.4.0
 
   packages/node:
     dependencies:

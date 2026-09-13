@@ -47,24 +47,24 @@ export type Model = AnthropicModel;
 
 export type MessageResponse = AnthropicMessageResponse;
 
-type ContentBlockStartData = {
+export type ContentBlockStartData = {
 	type: "content_block_start";
 	index: number;
 	content_block: TextBlock;
 };
 
-type ContentBlockDeltaData = {
+export type ContentBlockDeltaData = {
 	type: "content_block_delta";
 	index: number;
 	delta: TextDelta;
 };
 
-type TextDelta = {
+export type TextDelta = {
 	type: "text_delta";
 	text: string;
 };
 
-type MessageStartData = {
+export type MessageStartData = {
 	type: "message_start";
 	message: {
 		model: string;
@@ -73,6 +73,13 @@ type MessageStartData = {
 		content: [];
 	};
 };
+
+export type StreamEvent =
+	| {
+			event: string;
+			data: {};
+	  }
+	| AnthropicStreamResponse;
 
 export type AnthropicStreamResponse =
 	| {

@@ -14,6 +14,9 @@
 			"types": "./dist/index.d.mts"
 		}
 	},
+	"devDependencies": {
+		"@types/node": "^26.4.0"
+	},
 	"scripts": {
 		"build": "pnpm tsdown",
 		"check": "pnpm tsc --noEmit",

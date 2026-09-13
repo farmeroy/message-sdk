@@ -3,5 +3,8 @@
 	"dependencies": {
 		"@agent-message-sdk/core": "workspace:*",
 		"@agent-message-sdk/node": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^26.4.0"
 	}
 }

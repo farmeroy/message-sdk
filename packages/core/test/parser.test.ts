@@ -1,7 +1,7 @@
 import { type MessageResponse } from "../src/types";
 import { expect, test } from "vitest";
 import { clean, fullResponseFixture, splitMid } from "./fixtures";
-import { parseSSEStream, parseResponse } from "../src/parser";
+import { readEventStream, parseResponse } from "../src/parser";
 
 test("parses full anthropic response", () => {
 	const expected: MessageResponse = {
@@ -37,7 +37,7 @@ test("parse clean stream", async () => {
 		},
 	];
 	const result = [];
-	for await (const chunk of parseSSEStream(streamable(clean))) {
+	for await (const chunk of readEventStream(streamable(clean))) {
 		result.push(chunk);
 	}
 	expect(result).toEqual(expected);
@@ -58,7 +58,7 @@ test("parse a split event stream", async () => {
 		},
 	];
 	const result = [];
-	for await (const chunk of parseSSEStream(streamable(splitMid))) {
+	for await (const chunk of readEventStream(streamable(splitMid))) {
 		result.push(chunk);
 	}
 	expect(result).toEqual(expected);

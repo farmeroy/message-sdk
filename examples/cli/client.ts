@@ -30,12 +30,7 @@ async function main() {
 				// but maybe it makes sense to pass the stream or read method a writer to write to?
 				// or call client.display(stream)?
 				for await (const delta of client.streamMessage(input)) {
-					if (
-						delta.event === "content_block_delta" &&
-						delta.data.delta.type === "text_delta"
-					) {
-						process.stdout.write(delta.data.delta.text);
-					}
+					process.stdout.write(delta.text);
 				}
 
 				process.stdout.write("\n");
@@ -43,6 +38,7 @@ async function main() {
 			} catch (e) {
 				console.error(e);
 			}
+			console.log({ client });
 		}
 	} else {
 		const m = process.argv[2];

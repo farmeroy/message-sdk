@@ -33,9 +33,24 @@ export function parseResponse(r: RawAnthropicMessageResponse): MessageResponse {
 	return messageResponse;
 }
 
+export async function* parseAnthropicStreamResponse(
+	streamResponse: AsyncIterable<AnthropicStreamResponse>,
+): AsyncGenerator<ContentBlock> {
+	for await (const event of streamResponse) {
+		if (event.event === "content_block_start") {
+			yield { type: "text", text: event.data.content_block.text };
+		} else if (event.event === "content_block_delta") {
+			if (event.data.delta.type === "text_delta") {
+				yield { type: "text", text: event.data.delta.text };
+			}
+		}
+	}
+}
+
 // TODO read https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
 // this parser is specific to the events defined in anthropic v1 messages api
-export async function* parseSSEStream(
+// i would prefer if the parseAnthropicStreamResponse handled parsing a StreamResponse into the AnthropicStreamResponse
+export async function* readEventStream(
 	body: AsyncIterable<Uint8Array<ArrayBuffer>>,
 ): AsyncGenerator<AnthropicStreamResponse> {
 	const textDecoder = new TextDecoder("utf-8");
@@ -58,13 +73,11 @@ export async function* parseSSEStream(
 			const lines = splitOnce(completeData, "\n");
 			const event = splitOnce(lines[0], ":");
 			const data = splitOnce(lines[1], ":");
-			// generic event-stream data isn't always valid json so this should be handled differently
-			// just cast as an AnthropicStreamResponse event - all event names are valid, but when we _use_ the resposne
-			// is when we care about the name
+			// generic event-stream data isn't always valid json so this should be handled differently (can be just plain old text)
 			yield {
-				event: event[1].trim() as AnthropicStreamResponse["event"],
+				event: event[1].trim(),
 				data: JSON.parse(data[1]),
-			};
+			} as AnthropicStreamResponse;
 		}
 	}
 }
