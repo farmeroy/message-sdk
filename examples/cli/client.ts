@@ -1,3 +1,4 @@
+import { AuthenticationError } from "@agent-message-sdk/core";
 import { Client } from "@agent-message-sdk/core";
 import readline from "node:readline";
 
@@ -30,15 +31,27 @@ async function main() {
 				// but maybe it makes sense to pass the stream or read method a writer to write to?
 				// or call client.display(stream)?
 				for await (const delta of client.streamMessage(input)) {
-					process.stdout.write(delta.text);
+					if (delta.type === "text") {
+						process.stdout.write(delta.text);
+					} else if (delta.type === "error") {
+						process.stdout.write("Error: " + delta.text);
+					}
 				}
 
 				process.stdout.write("\n");
 				rl.resume();
 			} catch (e) {
-				console.error(e);
+				if (e instanceof AuthenticationError) {
+					process.stdout.write(e.message + "\n");
+					process.stdout.write("Is your ANTHROPIC_API_KEY correct?\n");
+				} else {
+					if (e instanceof Error) {
+						console.log(e.message);
+					} else {
+						console.error(e);
+					}
+				}
 			}
-			console.log({ client });
 		}
 	} else {
 		const m = process.argv[2];

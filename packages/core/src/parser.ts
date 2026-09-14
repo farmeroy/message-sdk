@@ -37,12 +37,20 @@ export async function* parseAnthropicStreamResponse(
 	streamResponse: AsyncIterable<AnthropicStreamResponse>,
 ): AsyncGenerator<ContentBlock> {
 	for await (const event of streamResponse) {
-		if (event.event === "content_block_start") {
-			yield { type: "text", text: event.data.content_block.text };
-		} else if (event.event === "content_block_delta") {
-			if (event.data.delta.type === "text_delta") {
-				yield { type: "text", text: event.data.delta.text };
+		try {
+			if (event.event === "error") {
+				console.error(event);
+				yield { type: "error", text: event.data.error.message };
 			}
+			if (event.event === "content_block_start") {
+				yield { type: "text", text: event.data.content_block.text };
+			} else if (event.event === "content_block_delta") {
+				if (event.data.delta.type === "text_delta") {
+					yield { type: "text", text: event.data.delta.text };
+				}
+			}
+		} catch (err) {
+			// console.error(err);
 		}
 	}
 }

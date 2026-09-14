@@ -11,6 +11,8 @@ import type {
 
 import { Client } from "./client";
 
+export * from "./errors";
+
 export { Client };
 
 export type {
