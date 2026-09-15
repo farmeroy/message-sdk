@@ -11,7 +11,7 @@ export type ContentBlock = TextBlock; // TODO this only handles textblocks now
 
 type TextBlock = {
 	citations?: object; // not using this at the moment so type object is enough
-	type: "text";
+	type: "text" | "error";
 	text: string;
 };
 
@@ -93,7 +93,11 @@ export type AnthropicStreamResponse =
 	| {
 			event: "content_block_delta";
 			data: ContentBlockDeltaData;
-	  };
+  }
+  | {
+    event: "error",
+    data: {error: {message: string}}
+    };
 
 export type RawAnthropicMessageResponse = {
 	id: string;
