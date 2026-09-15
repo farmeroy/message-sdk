@@ -57,9 +57,9 @@ export class Client {
 		const message: Message = { content: text, role: "user" };
 		this.#messages.push(message);
 		try {
-			// if (!process.env.ANTHROPIC_API_KEY) {
-			// 	throw new Error("no api key in env");
-			// }
+			if (!process.env.ANTHROPIC_API_KEY) {
+				throw new Error("no api key in env");
+			}
 			const response = await fetch(
 				this.#url,
 				this.#buildRequest({ stream: true }),
@@ -89,7 +89,7 @@ export class Client {
 			}
 			this.#messages.push({ role: "assistant", content: aggregateResponse });
 		} catch (err) {
-			// console.error(err);
+			// console.debug(err);
 			throw err;
 		}
 	}

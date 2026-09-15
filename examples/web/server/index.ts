@@ -1,10 +1,13 @@
 import { Client } from "@agent-message-sdk/core";
 import cors from "@fastify/cors";
-import Fastify, { type RouteShorthandOptions } from "fastify";
+import Fastify, {type RouteShorthandOptions} from "fastify";
+import proxy from "@fastify/http-proxy";
+import sse from "@fastify/sse";
 
 const fastify = Fastify({
 	logger: true,
 });
+
 
 fastify.register(cors, {
 	origin: true,
@@ -21,6 +24,7 @@ fastify.register(cors, {
 	// 	cb(new Error("Not allowed"), false);
 	// },
 });
+
 
 fastify.get("/health", async (_request, reply) => {
 	reply.send("healthy");
@@ -57,6 +61,11 @@ fastify.post<{ Body: { message: string } }>(
 		}
 	},
 );
+
+fastify.register(proxy, {
+  upstream: "https://api.anthropic.com/v1/messages",
+  prefix: "/stream"
+})
 
 const start = async () => {
 	try {

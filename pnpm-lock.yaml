@@ -247,6 +247,12 @@ importers:
       '@fastify/cors':
         specifier: ^11.3.0
         version: 11.3.0
+      '@fastify/http-proxy':
+        specifier: ^11.6.2
+        version: 11.6.2
+      '@fastify/sse':
+        specifier: ^0.6.0
+        version: 0.6.0(fastify@5.12.1)
       fastify:
         specifier: ^5.12.1
         version: 5.12.1
@@ -515,11 +521,23 @@ packages:
   '@fastify/forwarded@3.0.2':
     resolution: {integrity: sha512-NE8HgKLgYejV9lDpqkEFaDKMLYelJBVfHekhB0UKvX0ghagXRJqg68feg8er1NPXxG4N9i6vPxzt8E+3wHfcmA==}
 
+  '@fastify/http-proxy@11.6.2':
+    resolution: {integrity: sha512-SR/rDXL3RihOOPYx0Han41G2ksXvAj9WpSy9MqjdOL7U1s4EbUXLKkEi7S8zM/ockDLXjwVuT2qB8d5unL3XKg==}
+
   '@fastify/merge-json-schemas@0.2.1':
     resolution: {integrity: sha512-OA3KGBCy6KtIvLf8DINC5880o5iBlDX4SxzLQS8HorJAbqluzLRn80UXU0bxZn7UOFhFgpRJDasfwn9nG4FG4A==}
 
   '@fastify/proxy-addr@5.1.0':
     resolution: {integrity: sha512-INS+6gh91cLUjB+PVHfu1UqcB76Sqtpyp7bnL+FYojhjygvOPA9ctiD/JDKsyD9Xgu4hUhCSJBPig/w7duNajw==}
+
+  '@fastify/reply-from@12.6.5':
+    resolution: {integrity: sha512-/4MP+iF6T2+UBEmVYveMU2Tbx3lR1Q7xsDo8GAGjNeQrLF/JqNRlOMhOksh8fXBA47KI8ifsIlUXYdMOUXGZNQ==}
+
+  '@fastify/sse@0.6.0':
+    resolution: {integrity: sha512-+5g8zBbSN8ioKEfll2p6TXe75peq3uJ3/z44SakK5gNr9u6YqbOAHfTSRfXfvnUFzG97+3E055l360ruzsvgcQ==}
+    engines: {node: '>=20.20.2'}
+    peerDependencies:
+      fastify: ^5.x
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -1229,6 +1247,9 @@ packages:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
 
+  fast-content-type-parse@3.0.0:
+    resolution: {integrity: sha512-ZvLdcY8P+N8mGQJahJV5G4U88CSvT1rP8ApL6uETe88MBXrBHAkZlSEySdUlyztF7ccb+Znos3TFqaepHxdhBg==}
+
   fast-copy@4.1.1:
     resolution: {integrity: sha512-A4QTJmuiztpGtr6AMeJts9R4hbj2ZBUwtOaKrG6rw2y7t6+IaJKjz5M3XDs8BUznxDH43FVc6A0y/gWlMl4UtA==}
 
@@ -1847,6 +1868,10 @@ packages:
   undici-types@8.3.0:
     resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
 
+  undici@7.29.1:
+    resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
+    engines: {node: '>=20.18.1'}
+
   unplugin-utils@0.3.2:
     resolution: {integrity: sha512-xVToRh2CTmLk2HnEG7ac4rl1MJTT3RFkpS8B++/SnB0kXvuaavD+n3m/vrzyWQOdJNSZQACnbz01pnppbwV5BA==}
     engines: {node: '>=20.19.0'}
@@ -2017,6 +2042,18 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   wsl-utils@1.0.0:
     resolution: {integrity: sha512-Hl0ZOAs672vg+06kfujwRhoS6/jehvULrlFkuF2dRu6pHgA8U06h3xqNIqNNU1LTXPcedxByAR4GS6pwQK0mgA==}
@@ -2287,6 +2324,16 @@ snapshots:
 
   '@fastify/forwarded@3.0.2': {}
 
+  '@fastify/http-proxy@11.6.2':
+    dependencies:
+      '@fastify/reply-from': 12.6.5
+      fast-querystring: 1.1.2
+      fastify-plugin: 6.0.0
+      ws: 8.21.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@fastify/merge-json-schemas@0.2.1':
     dependencies:
       dequal: 2.0.3
@@ -2295,6 +2342,22 @@ snapshots:
     dependencies:
       '@fastify/forwarded': 3.0.2
       ipaddr.js: 2.5.0
+
+  '@fastify/reply-from@12.6.5':
+    dependencies:
+      '@fastify/error': 4.2.0
+      end-of-stream: 1.4.5
+      fast-content-type-parse: 3.0.0
+      fast-querystring: 1.1.2
+      fastify-plugin: 6.0.0
+      toad-cache: 3.7.4
+      undici: 7.29.1
+
+  '@fastify/sse@0.6.0(fastify@5.12.1)':
+    dependencies:
+      '@fastify/error': 4.2.0
+      fastify: 5.12.1
+      fastify-plugin: 6.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -2838,6 +2901,8 @@ snapshots:
       '@types/estree': 1.0.9
 
   expect-type@1.4.0: {}
+
+  fast-content-type-parse@3.0.0: {}
 
   fast-copy@4.1.1: {}
 
@@ -3403,6 +3468,8 @@ snapshots:
 
   undici-types@8.3.0: {}
 
+  undici@7.29.1: {}
+
   unplugin-utils@0.3.2:
     dependencies:
       pathe: 2.0.3
@@ -3555,6 +3622,8 @@ snapshots:
       stackback: 0.0.2
 
   wrappy@1.0.2: {}
+
+  ws@8.21.3: {}
 
   wsl-utils@1.0.0:
     dependencies:
