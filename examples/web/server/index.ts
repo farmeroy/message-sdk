@@ -46,7 +46,7 @@ fastify.post<{ Body: { message: string } }>(
 	opts,
 	async (request, reply) => {
 		const clientMessage: string = request.body.message;
-		const client = new Client("be concise");
+		const client = new Client({systemPrompt: "be concise"});
 		try {
 			const clientResponse = await client.sendMessage(clientMessage);
 			if (clientResponse.ok) {

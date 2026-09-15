@@ -8,8 +8,8 @@ async function main() {
 		process.exitCode = 1;
 		return;
 	}
-	if (process.argv[2] === "chat") {
-		const client = new Client("you are a helpful and creative soul");
+  if (process.argv[2] === "chat") {
+    const client = new Client({systemPrompt: "you are a helpful and creative soul"});
 		const rl = readline.createInterface({
 			input: process.stdin,
 			output: process.stdout,
@@ -55,7 +55,7 @@ async function main() {
 		}
 	} else {
 		const m = process.argv[2];
-		const client = new Client("You are a poet");
+		const client = new Client({systemPrompt: "You are a poet"});
 		try {
 			const response = await client.sendMessage(m);
 			console.log(response);

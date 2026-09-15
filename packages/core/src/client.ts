@@ -16,6 +16,12 @@ type BuildRequestObject = {
 	stream?: boolean;
 };
 
+type ClientConfig = {
+  systemPrompt?: string,
+  model?: Model,
+}
+
+
 export class Client {
 	// hardcoded now to v1 anthropic messages api
 	#url = "https://api.anthropic.com/v1/messages";
@@ -27,7 +33,7 @@ export class Client {
 	#systemPrompt: string;
 	#model: Model; // fix to haiku for now
 	#maxTokens = 1024;
-	constructor(systemPrompt = "", model: Model = "claude-haiku-4-5") {
+	constructor({systemPrompt = "", model = "claude-haiku-4-5"}: ClientConfig) {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
 	}
