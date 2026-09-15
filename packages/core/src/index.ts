@@ -1,6 +1,8 @@
 import type {
 	AnthropicStreamResponse,
+	ClientConfig,
 	ContentBlock,
+	HttpAdapter,
 	Message,
 	MessageCreateParams,
 	MessageResponse,
@@ -17,7 +19,9 @@ export { Client };
 
 export type {
 	AnthropicStreamResponse,
+	ClientConfig,
 	ContentBlock,
+	HttpAdapter,
 	Message,
 	MessageCreateParams,
 	MessageResponse,

@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { type Message } from "@agent-message-sdk/core";
 
 const messages = ref<Message[]>([]);
+
 const input = ref("");
 const loading = ref(false);
 

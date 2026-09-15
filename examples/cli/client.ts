@@ -1,5 +1,5 @@
 import { AuthenticationError } from "@agent-message-sdk/core";
-import { Client } from "@agent-message-sdk/core";
+import { createNodeClient } from "@agent-message-sdk/node";
 import readline from "node:readline";
 
 async function main() {
@@ -8,8 +8,10 @@ async function main() {
 		process.exitCode = 1;
 		return;
 	}
-  if (process.argv[2] === "chat") {
-    const client = new Client({systemPrompt: "you are a helpful and creative soul"});
+	if (process.argv[2] === "chat") {
+		const client = createNodeClient({
+			systemPrompt: "you are a helpful and creative soul",
+		});
 		const rl = readline.createInterface({
 			input: process.stdin,
 			output: process.stdout,
@@ -55,7 +57,7 @@ async function main() {
 		}
 	} else {
 		const m = process.argv[2];
-		const client = new Client({systemPrompt: "You are a poet"});
+		const client = createNodeClient({ systemPrompt: "You are a poet" });
 		try {
 			const response = await client.sendMessage(m);
 			console.log(response);

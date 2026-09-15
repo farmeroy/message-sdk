@@ -5,26 +5,17 @@ import {
 	parseAnthropicStreamResponse,
 } from "./parser";
 import {
+	type BuildRequestObject,
+	type ClientConfig,
 	type ContentBlock,
+	type HttpAdapter,
 	type Message,
 	type MessageResponse,
 	type Model,
 	type Result,
 } from "./types";
 
-type BuildRequestObject = {
-	stream?: boolean;
-};
-
-type ClientConfig = {
-  systemPrompt?: string,
-  model?: Model,
-}
-
-
 export class Client {
-	// hardcoded now to v1 anthropic messages api
-	#url = "https://api.anthropic.com/v1/messages";
 	// here we store the messages in memory,
 	// but we might want to specify a location
 	// such as local storage
@@ -33,18 +24,20 @@ export class Client {
 	#systemPrompt: string;
 	#model: Model; // fix to haiku for now
 	#maxTokens = 1024;
-	constructor({systemPrompt = "", model = "claude-haiku-4-5"}: ClientConfig) {
+	#httpAdapter: HttpAdapter;
+	constructor({
+		systemPrompt = "",
+		model = "claude-haiku-4-5",
+		httpAdapter,
+	}: ClientConfig) {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
+		this.#httpAdapter = httpAdapter;
 	}
 	#buildRequest(opts?: BuildRequestObject): RequestInit {
 		return {
 			method: "POST",
-			headers: [
-				["X-Api-Key", process.env?.ANTHROPIC_API_KEY ?? ""],
-				["anthropic-version", "2023-06-01"],
-				["Content-Type", "application/json"],
-			],
+			headers: this.#httpAdapter.headers,
 			body: JSON.stringify({
 				system: [
 					{
@@ -58,7 +51,7 @@ export class Client {
 				stream: opts?.stream ?? false,
 			}),
 		};
-  }
+	}
 	async *streamMessage(text: string): AsyncGenerator<ContentBlock> {
 		const message: Message = { content: text, role: "user" };
 		this.#messages.push(message);
@@ -67,7 +60,7 @@ export class Client {
 				throw new Error("no api key in env");
 			}
 			const response = await fetch(
-				this.#url,
+				this.#httpAdapter.url,
 				this.#buildRequest({ stream: true }),
 			);
 			// the response.body itself is an async iterable
@@ -106,7 +99,7 @@ export class Client {
 			if (process.env.ANTHROPIC_API_KEY == null) {
 				throw new Error("no api key in env");
 			}
-			const response = await fetch(this.#url, this.#buildRequest());
+			const response = await fetch(this.#httpAdapter.url, this.#buildRequest());
 			const r = await response.json();
 			const messageResponse = parseResponse(r);
 			this.#messages.push({

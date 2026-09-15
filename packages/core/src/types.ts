@@ -47,6 +47,21 @@ export type Model = AnthropicModel;
 
 export type MessageResponse = AnthropicMessageResponse;
 
+export type BuildRequestObject = {
+	stream?: boolean;
+};
+
+export type ClientConfig = {
+	systemPrompt?: string;
+	model?: Model;
+	httpAdapter: HttpAdapter;
+};
+
+export interface HttpAdapter {
+	url: string;
+	headers: {};
+}
+
 export type ContentBlockStartData = {
 	type: "content_block_start";
 	index: number;
@@ -93,11 +108,11 @@ export type AnthropicStreamResponse =
 	| {
 			event: "content_block_delta";
 			data: ContentBlockDeltaData;
-  }
-  | {
-    event: "error",
-    data: {error: {message: string}}
-    };
+	  }
+	| {
+			event: "error";
+			data: { error: { message: string } };
+	  };
 
 export type RawAnthropicMessageResponse = {
 	id: string;
