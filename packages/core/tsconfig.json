@@ -2,7 +2,7 @@
 	"extends": "../../tsconfig.shared.json",
 	"exclude": ["./tsdown.config.ts"],
 	"compilerOptions": {
-		"types": ["node"],
+		"types": [],
 		"module": "esnext",
 		"outDir": "./dist",
 		"composite": true,

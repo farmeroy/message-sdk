@@ -59,10 +59,31 @@ fastify.post<{ Body: { message: string } }>(
 	},
 );
 
-fastify.register(proxy, {
-	upstream: "https://api.anthropic.com/v1/messages",
-	prefix: "/stream",
-});
+// fastify.register(proxy, {
+// 	upstream: "https://api.anthropic.com/v1/messages",
+//   prefix: "/stream",
+//   replyOptions: {
+//     rewriteRequestHeaders: (_originalReq, headers) => ({
+//       ...headers,
+//       'X-Api-Key': process.env?.ANTHROPIC_API_KEY ?? ""
+//     })
+//   }
+// });
+//
+
+fastify.post("/stream", async(request, reply) => {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "X-Api-Key": process.env.ANTHROPIC_API_KEY ?? "",
+      "anthropic-version": "2023-06-01",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(request.body)
+  })
+  reply.header("Content-Type", "text/event-stream");
+  return reply.send(res.body);
+})
 
 const start = async () => {
 	try {

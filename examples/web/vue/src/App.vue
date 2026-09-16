@@ -1,29 +1,42 @@
 <script setup lang="ts">
 import HelloWorld from "./components/HelloWorld.vue";
 import { ref } from "vue";
-import { type Message } from "@agent-message-sdk/core";
+import { Client, type ClientMessageStore, type HttpAdapter, type Message } from "@agent-message-sdk/core";
 
 const messages = ref<Message[]>([]);
 
+const messageStore: ClientMessageStore = {
+push(message) {messages.value.push(message)},
+getAll() {
+  return messages.value 
+}
+}
+
+const httpAdapter: HttpAdapter = {
+url: "http://localhost:8080/stream",
+headers: {
+  "anthropic-version": "2023-06-01",
+  "content-type": "application/json"
+}
+}
+
+const client = new Client({systemPrompt: "you are a robot", httpAdapter, messageStore })
+
 const input = ref("");
 const loading = ref(false);
+const streamText = ref("");
 
 async function sendMessage() {
 	const text = input.value.trim();
 	if (!text || loading.value) return;
 
-	messages.value.push({ role: "user", content: text });
 	input.value = "";
 	loading.value = true;
 
 	try {
-		const res = await fetch("http://localhost:8080/", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ message: text }), // TODO: this should sent the whole array
-		});
-		const reply = await res.text();
-		messages.value.push({ role: "assistant", content: reply });
+   for await (const res of client.streamMessage(text)) {
+    streamText.value += res.text
+   }
 	} catch (e) {
 		console.error({ e });
 		messages.value.push({
@@ -32,6 +45,7 @@ async function sendMessage() {
 		});
 	} finally {
 		loading.value = false;
+    streamText.value = "";
 	}
 }
 
@@ -54,6 +68,7 @@ function getDisplayText(msg: Message): string {
       <p v-for="(msg, i) in messages" :key="i">
         {{ msg.role }}: {{ getDisplayText(msg) }}
       </p>
+      <p>{{streamText }}</p>
     </div>
     <form @submit.prevent="sendMessage">
       <textarea v-model="input" :disabled="loading"></textarea>

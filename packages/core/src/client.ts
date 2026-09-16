@@ -7,6 +7,7 @@ import {
 import {
 	type BuildRequestObject,
 	type ClientConfig,
+	type ClientMessageStore,
 	type ContentBlock,
 	type HttpAdapter,
 	type Message,
@@ -15,12 +16,24 @@ import {
 	type Result,
 } from "./types";
 
+
+export class InMemoryMessageStore implements ClientMessageStore {
+  #messages: Message[];
+  constructor(messageArray: Message[]) {
+    this.#messages = messageArray
+  }
+  push(message: Message) {this.#messages.push(message)};
+  getAll() { return this.#messages }
+}
+
+const defaultMessageStore = new InMemoryMessageStore([]);
+
 export class Client {
 	// here we store the messages in memory,
 	// but we might want to specify a location
 	// such as local storage
 	// a database, etc.
-	#messages: Message[] = [];
+	#messageStore: ClientMessageStore;
 	#systemPrompt: string;
 	#model: Model; // fix to haiku for now
 	#maxTokens = 1024;
@@ -28,11 +41,13 @@ export class Client {
 	constructor({
 		systemPrompt = "",
 		model = "claude-haiku-4-5",
-		httpAdapter,
+    httpAdapter,
+    messageStore = defaultMessageStore,
 	}: ClientConfig) {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
-		this.#httpAdapter = httpAdapter;
+    this.#httpAdapter = httpAdapter;
+    this.#messageStore = messageStore;
 	}
 	#buildRequest(opts?: BuildRequestObject): RequestInit {
 		return {
@@ -47,18 +62,18 @@ export class Client {
 				],
 				max_tokens: this.#maxTokens,
 				model: this.#model,
-				messages: this.#messages,
+				messages: this.#messageStore.getAll(),
 				stream: opts?.stream ?? false,
 			}),
 		};
 	}
 	async *streamMessage(text: string): AsyncGenerator<ContentBlock> {
 		const message: Message = { content: text, role: "user" };
-		this.#messages.push(message);
+		this.#messageStore.push(message);
 		try {
-			if (!process.env.ANTHROPIC_API_KEY) {
-				throw new Error("no api key in env");
-			}
+			// if (!process.env.ANTHROPIC_API_KEY) {
+			// 	throw new Error("no api key in env");
+			// }
 			const response = await fetch(
 				this.#httpAdapter.url,
 				this.#buildRequest({ stream: true }),
@@ -86,7 +101,7 @@ export class Client {
 				aggregateResponse += streamResponse.text;
 				yield streamResponse;
 			}
-			this.#messages.push({ role: "assistant", content: aggregateResponse });
+			this.#messageStore.push({ role: "assistant", content: aggregateResponse });
 		} catch (err) {
 			// console.debug(err);
 			throw err;
@@ -94,15 +109,15 @@ export class Client {
 	}
 	async sendMessage(text: string): Promise<Result<MessageResponse>> {
 		const message: Message = { content: text, role: "user" };
-		this.#messages.push(message);
+		this.#messageStore.push(message);
 		try {
-			if (process.env.ANTHROPIC_API_KEY == null) {
-				throw new Error("no api key in env");
-			}
+			// if (process.env.ANTHROPIC_API_KEY == null) {
+			// 	throw new Error("no api key in env");
+			// }
 			const response = await fetch(this.#httpAdapter.url, this.#buildRequest());
 			const r = await response.json();
 			const messageResponse = parseResponse(r);
-			this.#messages.push({
+			this.#messageStore.push({
 				role: "assistant",
 				content: messageResponse.content,
 			});
