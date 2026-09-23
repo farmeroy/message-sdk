@@ -1,7 +1,6 @@
 import type {
 	AnthropicStreamResponse,
-  ClientConfig,
-  ClientMessageStore,
+	ClientConfig,
 	ContentBlock,
 	HttpAdapter,
 	Message,
@@ -12,16 +11,15 @@ import type {
 	Role,
 } from "./types.ts";
 
-import { Client, InMemoryMessageStore } from "./client";
+import { Client } from "./client";
 
 export * from "./errors";
 
-export { Client, InMemoryMessageStore };
+export { Client };
 
 export type {
 	AnthropicStreamResponse,
-  ClientConfig,
-  ClientMessageStore,
+	ClientConfig,
 	ContentBlock,
 	HttpAdapter,
 	Message,

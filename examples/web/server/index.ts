@@ -1,6 +1,5 @@
 import cors from "@fastify/cors";
 import Fastify, { type RouteShorthandOptions } from "fastify";
-import proxy from "@fastify/http-proxy";
 import { createNodeClient } from "@agent-message-sdk/node";
 
 const fastify = Fastify({
@@ -71,19 +70,19 @@ fastify.post<{ Body: { message: string } }>(
 // });
 //
 
-fastify.post("/stream", async(request, reply) => {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "X-Api-Key": process.env.ANTHROPIC_API_KEY ?? "",
-      "anthropic-version": "2023-06-01",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(request.body)
-  })
-  reply.header("Content-Type", "text/event-stream");
-  return reply.send(res.body);
-})
+fastify.post("/stream", async (request, reply) => {
+	const res = await fetch("https://api.anthropic.com/v1/messages", {
+		method: "POST",
+		headers: {
+			"X-Api-Key": process.env.ANTHROPIC_API_KEY ?? "",
+			"anthropic-version": "2023-06-01",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(request.body),
+	});
+	reply.header("Content-Type", "text/event-stream");
+	return reply.send(res.body);
+});
 
 const start = async () => {
 	try {

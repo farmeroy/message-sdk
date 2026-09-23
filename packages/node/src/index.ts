@@ -5,6 +5,7 @@ import {
 } from "@agent-message-sdk/core";
 
 export const nodeAdapter: HttpAdapter = {
+	fetch,
 	url: "https://api.anthropic.com/v1/messages",
 	headers: [
 		["X-Api-Key", process.env?.ANTHROPIC_API_KEY ?? ""],

@@ -1,42 +1,54 @@
 <script setup lang="ts">
 import HelloWorld from "./components/HelloWorld.vue";
 import { ref } from "vue";
-import { Client, type ClientMessageStore, type HttpAdapter, type Message } from "@agent-message-sdk/core";
+import {
+	Client,
+	type HttpAdapter,
+	type Message,
+} from "@agent-message-sdk/core";
 
 const messages = ref<Message[]>([]);
 
-const messageStore: ClientMessageStore = {
-push(message) {messages.value.push(message)},
-getAll() {
-  return messages.value 
-}
-}
 
 const httpAdapter: HttpAdapter = {
-url: "http://localhost:8080/stream",
-headers: {
-  "anthropic-version": "2023-06-01",
-  "content-type": "application/json"
-}
-}
+	url: "http://localhost:8080/stream",
+  fetch: (url, init) => fetch(url, init),
+	headers: {
+		"anthropic-version": "2023-06-01",
+		"content-type": "application/json",
+	},
+};
 
-const client = new Client({systemPrompt: "you are a robot", httpAdapter, messageStore })
+const client = new Client({
+	systemPrompt: "you are a robot",
+	httpAdapter,
+});
 
 const input = ref("");
 const loading = ref(false);
-const streamText = ref("");
 
 async function sendMessage() {
 	const text = input.value.trim();
 	if (!text || loading.value) return;
+  messages.value.push({role: 'user', content: text});
 
 	input.value = "";
 	loading.value = true;
 
 	try {
-   for await (const res of client.streamMessage(text)) {
-    streamText.value += res.text
-   }
+    const buffer: Message = {role: 'assistant', content: "" };
+    messages.value.push(buffer);
+
+    const idx = messages.value.length -1;
+    
+		for await (const res of client.streamMessage(text)) {
+    if (!messages.value[idx]) messages.value[idx] = {role: 'assistant', content: res.text };
+    messages.value[idx] = {
+      ...messages.value[idx],
+      content: messages.value[idx]?.content + res.text
+
+    }
+		}
 	} catch (e) {
 		console.error({ e });
 		messages.value.push({
@@ -45,7 +57,6 @@ async function sendMessage() {
 		});
 	} finally {
 		loading.value = false;
-    streamText.value = "";
 	}
 }
 
@@ -68,7 +79,6 @@ function getDisplayText(msg: Message): string {
       <p v-for="(msg, i) in messages" :key="i">
         {{ msg.role }}: {{ getDisplayText(msg) }}
       </p>
-      <p>{{streamText }}</p>
     </div>
     <form @submit.prevent="sendMessage">
       <textarea v-model="input" :disabled="loading"></textarea>

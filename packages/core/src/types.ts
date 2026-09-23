@@ -20,10 +20,6 @@ export type MessageCreateParams = {
 	content: string | ContentBlock[];
 };
 
-export interface ClientMessageStore {
-  push: (message: Message) => void;
-  getAll: () => Message[];
-}
 
 export type AnthropicModel = "claude-haiku-4-5" | "claude-sonnet-5";
 
@@ -59,13 +55,13 @@ export type BuildRequestObject = {
 export type ClientConfig = {
 	systemPrompt?: string;
 	model?: Model;
-  httpAdapter: HttpAdapter;
-  messageStore: ClientMessageStore;
+	httpAdapter: HttpAdapter;
 };
 
 export interface HttpAdapter {
 	url: string;
 	headers: {};
+	fetch: typeof fetch;
 }
 
 export type ContentBlockStartData = {

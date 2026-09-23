@@ -51,6 +51,7 @@ export async function* parseAnthropicStreamResponse(
 			}
 		} catch (err) {
 			console.error(err);
+			throw err;
 		}
 	}
 }

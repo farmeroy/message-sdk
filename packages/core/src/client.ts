@@ -7,7 +7,6 @@ import {
 import {
 	type BuildRequestObject,
 	type ClientConfig,
-	type ClientMessageStore,
 	type ContentBlock,
 	type HttpAdapter,
 	type Message,
@@ -17,23 +16,13 @@ import {
 } from "./types";
 
 
-export class InMemoryMessageStore implements ClientMessageStore {
-  #messages: Message[];
-  constructor(messageArray: Message[]) {
-    this.#messages = messageArray
-  }
-  push(message: Message) {this.#messages.push(message)};
-  getAll() { return this.#messages }
-}
-
-const defaultMessageStore = new InMemoryMessageStore([]);
 
 export class Client {
 	// here we store the messages in memory,
 	// but we might want to specify a location
 	// such as local storage
 	// a database, etc.
-	#messageStore: ClientMessageStore;
+	#messageStore: Message[];
 	#systemPrompt: string;
 	#model: Model; // fix to haiku for now
 	#maxTokens = 1024;
@@ -41,13 +30,12 @@ export class Client {
 	constructor({
 		systemPrompt = "",
 		model = "claude-haiku-4-5",
-    httpAdapter,
-    messageStore = defaultMessageStore,
+		httpAdapter,
 	}: ClientConfig) {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
     this.#httpAdapter = httpAdapter;
-    this.#messageStore = messageStore;
+    this.#messageStore = [];
 	}
 	#buildRequest(opts?: BuildRequestObject): RequestInit {
 		return {
@@ -62,7 +50,7 @@ export class Client {
 				],
 				max_tokens: this.#maxTokens,
 				model: this.#model,
-				messages: this.#messageStore.getAll(),
+				messages: this.#messageStore,
 				stream: opts?.stream ?? false,
 			}),
 		};
@@ -74,7 +62,7 @@ export class Client {
 			// if (!process.env.ANTHROPIC_API_KEY) {
 			// 	throw new Error("no api key in env");
 			// }
-			const response = await fetch(
+			const response = await this.#httpAdapter.fetch(
 				this.#httpAdapter.url,
 				this.#buildRequest({ stream: true }),
 			);
@@ -101,7 +89,10 @@ export class Client {
 				aggregateResponse += streamResponse.text;
 				yield streamResponse;
 			}
-			this.#messageStore.push({ role: "assistant", content: aggregateResponse });
+			this.#messageStore.push({
+				role: "assistant",
+				content: aggregateResponse,
+			});
 		} catch (err) {
 			// console.debug(err);
 			throw err;
@@ -114,7 +105,10 @@ export class Client {
 			// if (process.env.ANTHROPIC_API_KEY == null) {
 			// 	throw new Error("no api key in env");
 			// }
-			const response = await fetch(this.#httpAdapter.url, this.#buildRequest());
+			const response = await this.#httpAdapter.fetch(
+				this.#httpAdapter.url,
+				this.#buildRequest(),
+			);
 			const r = await response.json();
 			const messageResponse = parseResponse(r);
 			this.#messageStore.push({

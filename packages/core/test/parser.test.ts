@@ -2,6 +2,7 @@ import { type MessageResponse } from "../src/types";
 import { expect, test } from "vitest";
 import { clean, fullResponseFixture, splitMid } from "./fixtures";
 import { readEventStream, parseResponse } from "../src/parser";
+import { streamable } from "./helpers";
 
 test("parses full anthropic response", () => {
 	const expected: MessageResponse = {
@@ -14,13 +15,6 @@ test("parses full anthropic response", () => {
 	};
 	expect(parseResponse(fullResponseFixture)).toEqual(expected);
 });
-
-async function* streamable(chunks: Array<string>) {
-	const encoder = new TextEncoder();
-	for (const chunk of chunks) {
-		yield encoder.encode(chunk);
-	}
-}
 
 test("parse clean stream", async () => {
 	const expected = [
