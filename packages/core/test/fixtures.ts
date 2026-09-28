@@ -1,4 +1,4 @@
-import type { RawAnthropicMessageResponse } from "../src/types";
+import type { AnthropicMessageResponse } from "../src/types";
 
 export const emptyResponse = {};
 
@@ -55,7 +55,7 @@ export const badSystemPromptResponse = {
 	request_id: "req_011CeirTTD5M9j8LbxPCir7d",
 };
 
-export const fullResponseFixture: RawAnthropicMessageResponse = {
+export const fullResponseFixture: AnthropicMessageResponse = {
 	id: "msg_013Zva2CMHLNnXjNJJKqJ2EF",
 	container: {
 		id: "container_011CpZohnwH4vuy7gazohgSP",

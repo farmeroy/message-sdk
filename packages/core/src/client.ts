@@ -59,9 +59,6 @@ export class Client {
 		const message: Message = { content: text, role: "user" };
 		this.#messageStore.push(message);
 		try {
-			// if (!process.env.ANTHROPIC_API_KEY) {
-			// 	throw new Error("no api key in env");
-			// }
 			const response = await this.#httpAdapter.fetch(
 				this.#httpAdapter.url,
 				this.#buildRequest({ stream: true }),
@@ -94,7 +91,7 @@ export class Client {
 				content: aggregateResponse,
 			});
 		} catch (err) {
-			// console.debug(err);
+			console.debug(err);
 			throw err;
 		}
 	}
@@ -102,9 +99,6 @@ export class Client {
 		const message: Message = { content: text, role: "user" };
 		this.#messageStore.push(message);
 		try {
-			// if (process.env.ANTHROPIC_API_KEY == null) {
-			// 	throw new Error("no api key in env");
-			// }
 			const response = await this.#httpAdapter.fetch(
 				this.#httpAdapter.url,
 				this.#buildRequest(),

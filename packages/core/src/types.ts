@@ -60,7 +60,7 @@ export type ClientConfig = {
 
 export interface HttpAdapter {
 	url: string;
-	headers: {};
+	headers: HeadersInit;
 	fetch: typeof fetch;
 }
 
@@ -91,13 +91,6 @@ export type MessageStartData = {
 	};
 };
 
-export type StreamEvent =
-	| {
-			event: string;
-			data: {};
-	  }
-	| AnthropicStreamResponse;
-
 export type AnthropicStreamResponse =
 	| {
 			event: "message_start";
@@ -115,18 +108,5 @@ export type AnthropicStreamResponse =
 			event: "error";
 			data: { error: { message: string } };
 	  };
-
-export type RawAnthropicMessageResponse = {
-	id: string;
-	container?: object;
-	type: string;
-	role: string;
-	content: ContentBlock[];
-	model: string;
-	stop_reason?: string;
-	stop_details?: object;
-	stop_sequence?: string | null;
-	usage?: object;
-};
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: string };
