@@ -15,8 +15,6 @@ import {
 	type Result,
 } from "./types";
 
-
-
 export class Client {
 	// here we store the messages in memory,
 	// but we might want to specify a location
@@ -34,8 +32,8 @@ export class Client {
 	}: ClientConfig) {
 		this.#systemPrompt = systemPrompt;
 		this.#model = model;
-    this.#httpAdapter = httpAdapter;
-    this.#messageStore = [];
+		this.#httpAdapter = httpAdapter;
+		this.#messageStore = [];
 	}
 	#buildRequest(opts?: BuildRequestObject): RequestInit {
 		return {

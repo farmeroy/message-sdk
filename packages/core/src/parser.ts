@@ -24,7 +24,7 @@ export function parseResponse(r: AnthropicMessageResponse): MessageResponse {
 	const messageResponse: MessageResponse = {
 		id: r.id ?? "",
 		type: r.type ?? "message",
-		role: (r.role) ?? "assistant", // TODO parse the role or return parse error
+		role: r.role ?? "assistant", // TODO parse the role or return parse error
 		content: parsedContent,
 		model: r.model ?? "",
 		stop_reason: r.stop_reason ?? "none",

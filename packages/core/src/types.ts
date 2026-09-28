@@ -20,7 +20,6 @@ export type MessageCreateParams = {
 	content: string | ContentBlock[];
 };
 
-
 export type AnthropicModel = "claude-haiku-4-5" | "claude-sonnet-5";
 
 export type AnthropicMessageBody = {

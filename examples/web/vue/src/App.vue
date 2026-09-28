@@ -9,10 +9,9 @@ import {
 
 const messages = ref<Message[]>([]);
 
-
 const httpAdapter: HttpAdapter = {
 	url: "http://localhost:8080/stream",
-  fetch: (url, init) => fetch(url, init),
+	fetch: (url, init) => fetch(url, init),
 	headers: {
 		"anthropic-version": "2023-06-01",
 		"content-type": "application/json",
@@ -30,24 +29,24 @@ const loading = ref(false);
 async function sendMessage() {
 	const text = input.value.trim();
 	if (!text || loading.value) return;
-  messages.value.push({role: 'user', content: text});
+	messages.value.push({ role: "user", content: text });
 
 	input.value = "";
 	loading.value = true;
 
 	try {
-    const buffer: Message = {role: 'assistant', content: "" };
-    messages.value.push(buffer);
+		const buffer: Message = { role: "assistant", content: "" };
+		messages.value.push(buffer);
 
-    const idx = messages.value.length -1;
-    
+		const idx = messages.value.length - 1;
+
 		for await (const res of client.streamMessage(text)) {
-    if (!messages.value[idx]) messages.value[idx] = {role: 'assistant', content: res.text };
-    messages.value[idx] = {
-      ...messages.value[idx],
-      content: messages.value[idx]?.content + res.text
-
-    }
+			if (!messages.value[idx])
+				messages.value[idx] = { role: "assistant", content: res.text };
+			messages.value[idx] = {
+				...messages.value[idx],
+				content: messages.value[idx]?.content + res.text,
+			};
 		}
 	} catch (e) {
 		console.error({ e });
